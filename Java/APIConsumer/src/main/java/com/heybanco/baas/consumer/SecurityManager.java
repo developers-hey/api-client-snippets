@@ -33,7 +33,7 @@ import java.util.Properties;
 public class SecurityManager {
     private JWK jwkPublicRSA;
     private JWK jwkPrivateRSA;
-    private static final String TOKEN_URL = "https://test-tech.hey.inc/api-auth/v1/oidc/token";
+    private static final String TOKEN_URL = "https://api-sbox-tech.hey.inc/auth/v1/oidc/token";
     private static final String HTTP_METHOD = "POST";
     private static final String KEYSTORE_TYPE = "PKCS12";
     private static final String SSL_PROTOCOL = "TLS";

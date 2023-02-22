@@ -70,5 +70,43 @@ public SSLContext getSSLContext() throws KeyStoreException, IOException, Certifi
 **Returns**
 The SSL context.
 
+# APIConsumer Class
 
- 
+The ApiConsumer class is a Java class that consumes an API from a remote server. It includes various properties and methods to make HTTP requests, handle security, and process response data.
+
+# Properties
+
+The class has the following properties:
+
+    logger: A logger object that is used for logging messages.
+    HOSTNAME: A constant string that defines the hostname of the remote server.
+    CLIENT_ID: A constant string that contains the client ID used to authenticate with the remote server.
+    CLIENT_SECRET: A constant string that contains the client secret used to authenticate with the remote server.
+    B_APPLICATION: A constant string that contains the B application used to sign and encrypt the payload.
+
+ # Methods
+
+The class has a main method that serves as the entry point of the application. It uses various helper methods to perform the following tasks:
+
+    Load configuration properties from a file.
+    Retrieve an authorization token from the remote server.
+    Create HTTP headers and payload for the API request.
+    Sign and encrypt the payload using the B-application.
+    Send a POST request to create an account.
+    Extract the account ID from the response headers.
+    Send a GET request to retrieve the account data.
+    Decrypt and verify the signed payload in the response data.
+
+# File Config
+This repository contains a file named **config.properties** that contains key-value pairs for the APIConsumer project. These properties are used for authentication and encryption purposes.
+
+# Usage
+
+The properties file contains the following keys:
+
+    KEYSTORE_PATH: This key specifies the path to the client keystore file in the APIConsumer project. 
+    KEYSTORE_PASSWORD: This key specifies the password for the client keystore file. 
+    PRIVATEKEY: This key specifies the path to the client private key file in the APIConsumer project. 
+    PUBLICKEY: This key specifies the path to the server public key file in the APIConsumer project. 
+    
+These properties are used by the APIConsumer project to authenticate and encrypt data.

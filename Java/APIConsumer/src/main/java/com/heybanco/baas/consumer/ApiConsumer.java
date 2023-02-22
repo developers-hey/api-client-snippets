@@ -23,9 +23,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.*;
 
+/**
+
+    The ApiConsumer class is used to consume APIs from Hey! bank.
+    It sends a POST request to create a new account and a GET request to retrieve the account information.
+    */
 public class ApiConsumer {
     private static final Logger logger = Logger.getLogger(ApiConsumer.class.getName());
-    private static final String HOSTNAME = "https://test-tech.hey.inc";
+    private static final String HOSTNAME = "https://api-sbox-tech.hey.inc";
     private static final String CLIENT_ID = "bank-app";
     private static final String CLIENT_SECRET = "abf3714d-1a00-4b1e-9ad4-7d4554105c7c";
     private static final String B_APPLICATION = "abf3714d-1a00-4b1e-9ad4-7d4554105c7c";
@@ -34,7 +39,7 @@ public class ApiConsumer {
         Properties prop = new Properties();
         FileInputStream input = null;
         String method = "POST";
-        String endpoind = "/api/taas/v1.0/accounts";
+        String endpoind = "/taas/v1.0/accounts";
         SecurityManager securityManager = new SecurityManager(prop);
         try {
             input = new FileInputStream("../APIConsumer/src/main/resources/config.properties");
