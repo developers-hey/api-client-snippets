@@ -35,7 +35,7 @@ public class ApiConsumer {
                 String method = "POST";
                 SecurityManager securityManager = new SecurityManager(properties);
                 try {
-                        FileInputStream input   input = new FileInputStream("../APIConsumer/src/main/resources/config.properties");
+                        FileInputStream input = new FileInputStream("../APIConsumer/src/main/resources/config.properties");
                         properties.load(input);
                         input.close();
                         JsonObject jsonResponse = JsonParser.parseString(securityManager.getAuthorizationToken())
