@@ -79,11 +79,7 @@ The ApiConsumer class is a Java class that consumes an API from a remote server.
 The class has the following properties:
 
     logger: A logger object that is used for logging messages.
-    HOSTNAME: A constant string that defines the hostname of the remote server.
-    CLIENT_ID: A constant string that contains the client ID used to authenticate with the remote server.
-    CLIENT_SECRET: A constant string that contains the client secret used to authenticate with the remote server.
-    B_APPLICATION: A constant string that contains the B application used to sign and encrypt the payload.
-
+  
  # Methods
 
 The class has a main method that serves as the entry point of the application. It uses various helper methods to perform the following tasks:
@@ -108,5 +104,10 @@ The properties file contains the following keys:
     KEYSTORE_PASSWORD: This key specifies the password for the client keystore file. 
     PRIVATEKEY: This key specifies the path to the client private key file in the APIConsumer project. 
     PUBLICKEY: This key specifies the path to the server public key file in the APIConsumer project. 
+    HOSTNAME: Defines the hostname of the remote server.
+    OAUTH_CLIENT_ID: The client ID used to authenticate with the remote server.
+    OAUTH_CLIENT_SECRET: The client secret used to authenticate with the remote server.
+    B_APPLICATION: Unique consumer application identifier, used to sign and encrypt the payload.
+
     
-These properties are used by the APIConsumer project to authenticate and encrypt data.
+These properties are used by the APIConsumer project.
