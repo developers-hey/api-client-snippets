@@ -33,20 +33,23 @@ import java.util.Properties;
 public class SecurityManager {
     private JWK jwkPublicRSA;
     private JWK jwkPrivateRSA;
-    private static final String TOKEN_URL = "https://api-sbox-tech.hey.inc/auth/v1/oidc/token";
+    private static final String TOKEN_ENDPOINT = "/auth/v1/oidc/token";
+    private static final String HOSTNAME_VALUE = "HOSTNAME";
     private static final String HTTP_METHOD = "POST";
     private static final String KEYSTORE_TYPE = "PKCS12";
     private static final String SSL_PROTOCOL = "TLS";
-    private static final String OAUTH_GRAN_TYPE_VALUE = "client_credentials";
-    private static final String OAUTH_GRAN_TYPE = "grant_type";
+    private static final String OAUTH_GRANT_TYPE_VALUE = "client_credentials";
+    private static final String OAUTH_GRANT_TYPE = "grant_type";
     private static final String OAUTH_CLIENT_ID = "client_id";
     private static final String OAUTH_CLIENT_SECRET = "client_secret";
-    private static final String EQUALS_SING = "=";
+    private static final String OAUTH_CLIENT_ID_VALUE = "OAUTH_CLIENT_ID";
+    private static final String OAUTH_CLIENT_SECRET_VALUE = "OAUTH_CLIENT_SECRET";
+    private static final String EQUALS_SYMBOL = "=";
     private static final String AMPERSAND = "&";
     private static final String KEYSTORE_PATH_VALUE = "KEYSTORE_PATH";
     private static final String KEYSTORE_PASSWORD_VALUE = "KEYSTORE_PASSWORD";
-    private static final String PRIVATEKEY_VALUE = "PRIVATEKEY";
-    private static final String PUBLICKEY_VALUE = "PUBLICKEY";
+    private static final String PRIVATE_KEY_VALUE = "PRIVATE_KEY";
+    private static final String PUBLIC_KEY_VALUE = "PUBLIC_KEY";
     private static final String HEADER_KEY = "Content-Type";
     private static final String HEADER_VALUE = "application/x-www-form-urlencoded";
 
@@ -66,8 +69,6 @@ public class SecurityManager {
      * This method makes a POST request to a specified token URL with the client ID
      * and client secret.
      * 
-     * @param clientId     The client ID for authentication.
-     * @param clientSecret The client secret for authentication.
      * @return the authorization token.
      * @throws IOException               if an I/O error occurs while making the
      *                                   request.
@@ -81,19 +82,19 @@ public class SecurityManager {
      * @throws URISyntaxException        if there is an error with the URI syntax.
      * @throws InterruptedException      if the thread is interrupted.
      */
-    public String getAuthorizationToken(String clientId, String clientSecret)
+    public String getAuthorizationToken()
             throws IOException, UnrecoverableKeyException, CertificateException, KeyStoreException,
             NoSuchAlgorithmException, KeyManagementException, URISyntaxException, InterruptedException {
-        String requestBody = OAUTH_GRAN_TYPE + EQUALS_SING + OAUTH_GRAN_TYPE_VALUE
-                + AMPERSAND + OAUTH_CLIENT_ID + EQUALS_SING + clientId
-                + AMPERSAND + OAUTH_CLIENT_SECRET + EQUALS_SING + clientSecret;
+        String requestBody = OAUTH_GRANT_TYPE + EQUALS_SYMBOL + OAUTH_GRANT_TYPE_VALUE
+                + AMPERSAND + OAUTH_CLIENT_ID + EQUALS_SYMBOL + properties.getProperty(OAUTH_CLIENT_ID_VALUE)
+                + AMPERSAND + OAUTH_CLIENT_SECRET + EQUALS_SYMBOL + properties.getProperty(OAUTH_CLIENT_SECRET_VALUE);
         Map<String, String> headers = new HashMap<>();
         headers.put(HEADER_KEY, HEADER_VALUE);
         HttpClient httpClient = HttpClient.newBuilder()
                 .sslContext(getSSLContext())
                 .build();
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                .uri(new URI(TOKEN_URL))
+                .uri(new URI(properties.getProperty(HOSTNAME_VALUE) + TOKEN_ENDPOINT))
                 .method(HTTP_METHOD, HttpRequest.BodyPublishers.ofString(requestBody));
         headers.forEach(requestBuilder::header);
         HttpResponse<String> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
@@ -180,8 +181,8 @@ public class SecurityManager {
      * @throws JOSEException if an error occurs while parsing the keys
      */
     private void loadKeys() throws IOException, JOSEException {
-        jwkPrivateRSA = JWK.parseFromPEMEncodedObjects(readFile(this.properties.getProperty(PRIVATEKEY_VALUE)));
-        jwkPublicRSA = JWK.parseFromPEMEncodedObjects(readFile(this.properties.getProperty(PUBLICKEY_VALUE)));
+        jwkPrivateRSA = JWK.parseFromPEMEncodedObjects(readFile(this.properties.getProperty(PRIVATE_KEY_VALUE)));
+        jwkPublicRSA = JWK.parseFromPEMEncodedObjects(readFile(this.properties.getProperty(PUBLIC_KEY_VALUE)));
     }
 
     /**

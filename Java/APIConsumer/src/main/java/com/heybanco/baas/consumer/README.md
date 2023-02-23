@@ -26,16 +26,12 @@ Builds an SecurityManager object with the specified Properties object.
 
 # Public Methods
 
-**getAuthorizationToken(String clientId, String clientSecret)**
+**getAuthorizationToken()**
 
 Generates an authorization token using client credentials grant type. Makes a POST request to a specified token URL with the client ID and client secret.
 ```java
-public String getAuthorizationToken(String clientId, String clientSecret) throws IOException, UnrecoverableKeyException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, URISyntaxException, InterruptedException
+public String getAuthorizationToken() throws IOException, UnrecoverableKeyException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, URISyntaxException, InterruptedException
 ```
-**Parameters**
-
-        clientId: the client ID to use for the request
-        clientSecret: the client secret to use for the request
         
 **Exceptions**
 
@@ -52,7 +48,7 @@ public String getAuthorizationToken(String clientId, String clientSecret) throws
 **getSSLContext()**
 
 Obtains an SSL context with the specified key store and password.
-```jjava
+```java
 
 public SSLContext getSSLContext() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException
 ```

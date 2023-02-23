@@ -18,34 +18,28 @@ import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+
 import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.*;
 
-/**
- * 
- * The ApiConsumer class is used to consume APIs from Hey! bank.
- * It sends a POST request to create a new account and a GET request to retrieve
- * the account information.
- */
 public class ApiConsumer {
         private static final Logger logger = Logger.getLogger(ApiConsumer.class.getName());
-        private static final String HOSTNAME = "https://api-sbox-tech.hey.inc";
-        private static final String CLIENT_ID = "bank-app";
-        private static final String CLIENT_SECRET = "abf3714d-1a00-4b1e-9ad4-7d4554105c7c";
-        private static final String B_APPLICATION = "abf3714d-1a00-4b1e-9ad4-7d4554105c7c";
+        private static final String HOSTNAME_VALUE = "HOSTNAME";
+        private static final String B_APPLICATION_VALUE = "B_APPLICATION";
+        private static final String BASE_PATH = "/taas/v1.0";
+        private static final String ENDPOINT = "/accounts";
 
         public static void main(String[] args) {
-                Properties prop = new Properties();
-                FileInputStream input = null;
+                Properties properties = new Properties();
                 String method = "POST";
-                String endpoind = "/taas/v1.0/accounts";
-                SecurityManager securityManager = new SecurityManager(prop);
+                SecurityManager securityManager = new SecurityManager(properties);
+                FileInputStream input = null;
                 try {
                         input = new FileInputStream("../APIConsumer/src/main/resources/config.properties");
-                        prop.load(input);
-                        JsonObject jsonResponse = JsonParser
-                                        .parseString(securityManager.getAuthorizationToken(CLIENT_ID, CLIENT_SECRET))
+                        properties.load(input);
+                        input.close();
+                        JsonObject jsonResponse = JsonParser.parseString(securityManager.getAuthorizationToken())
                                         .getAsJsonObject();
                         String accessToken = jsonResponse.get("access_token").getAsString();
                         Map<String, String> headers = new HashMap<String, String>() {
@@ -54,42 +48,52 @@ public class ApiConsumer {
                         headers.put("Content-Type", "application/json");
                         headers.put("B-Transaction", "123456789");
                         headers.put("Accept-Charset", "UTF-8");
-                        headers.put("B-application", B_APPLICATION);
+                        headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
                         headers.put("Authorization", "Bearer " + accessToken);
-                        String requestPayload = "{\"taxRegimeId\": 2,\"name\": \"Jose Luis\",\"lastName\": \"Lemuus\",\"secondLastName\": \"Valdivia\",\"businessName\": \"\",\"birthday\": \"1996-10-03\",\"rfc\": \"LEVL961003KQ0\",\"curp\": \"LEVL961003HBSMLS06\",\"callingCode\": \"52\",\"cellPhoneNumber\": \"3311065681\",\"email\": \"jose.lemus@banregio.com\",\"nationalityId\": \"001\",\"countryId\": \"01\",\"stateId\": \"047\",\"cityId\": \"04701005\",\"legalRepresentative\": {\"name\": \"\",\"lastName\": \"\",\"secondLastName\": \"\"}}";
-                        String encryptedPayload = securityManager.signAndEncryptPayload(requestPayload, B_APPLICATION);
+                        String requestPayload = "{\"taxRegimeId\": 2,\"name\": \"Jose Luis\",\"lastName\": \"Lemus\",\"secondLastName\": \"Valdivia\",\"businessName\": \"\",\"birthday\": \"1996-10-03\",\"rfc\": \"LEVL961003KQ0\",\"curp\": \"LEVL961003HBSMLS06\",\"callingCode\": \"52\",\"cellPhoneNumber\": \"3311065681\",\"email\": \"jose.lemus@banregio.com\",\"nationalityId\": \"001\",\"countryId\": \"01\",\"stateId\": \"047\",\"cityId\": \"04701005\",\"legalRepresentative\": {\"name\": \"\",\"lastName\": \"\",\"secondLastName\": \"\"}}";
+                        String encryptedPayload = securityManager.signAndEncryptPayload(requestPayload,
+                                        properties.getProperty(B_APPLICATION_VALUE));
                         requestPayload = "{\"data\":\"" + encryptedPayload + "\"}";
                         HttpClient httpClient = HttpClient.newBuilder()
                                         .sslContext(securityManager.getSSLContext())
                                         .build();
                         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                                        .uri(URI.create((HOSTNAME + endpoind)))
+                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
+                                                        + ENDPOINT)))
                                         .method(method, HttpRequest.BodyPublishers.ofString(requestPayload));
                         headers.forEach(requestBuilder::header);
                         HttpResponse<String> response = httpClient.send(requestBuilder.build(),
                                         HttpResponse.BodyHandlers.ofString());
-                        logger.log(Level.INFO, response.headers().map().toString());
-                        logger.log(Level.INFO, response.body());
+                        String responseHeaders = response.headers().map().toString();
+                        String responseBody = response.body();
+                        logger.log(Level.INFO, "Response headers: " + responseHeaders);
+                        logger.log(Level.INFO, "Response body: " + responseBody);
                         Optional<String> locationHeader = response.headers().firstValue("location");
+
                         if (locationHeader.isPresent()) {
-                                String accountId = locationHeader.get().replace("/accounts", "");
+                                // String accountId = locationHeader.get().replace(endpoind,"");
                                 requestBuilder = HttpRequest.newBuilder()
-                                                .uri(URI.create((HOSTNAME + endpoind + accountId)))
+                                                .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
+                                                                + locationHeader.get())))
                                                 .GET();
                                 headers.remove("Content-Type");
                                 headers.forEach(requestBuilder::header);
                                 HttpResponse<String> responseEncript = httpClient.send(requestBuilder.build(),
                                                 HttpResponse.BodyHandlers.ofString());
-                                logger.log(Level.INFO, responseEncript.body());
-                                jsonResponse = JsonParser.parseString(responseEncript.body()).getAsJsonObject();
-                                logger.log(Level.INFO, securityManager
-                                                .decryptAndVerifySignPayload(jsonResponse.get("data").getAsString()));
+                                String responseBodyEncrypt = responseEncript.body();
+                                logger.log(Level.INFO, "Response body encrypted: " + responseBodyEncrypt);
+                                jsonResponse = JsonParser.parseString(responseBodyEncrypt).getAsJsonObject();
+                                String decryptedPayload = securityManager
+                                                .decryptAndVerifySignPayload(jsonResponse.get("data").getAsString());
+                                logger.log(Level.INFO, "Decrypted response body: " + decryptedPayload);
                         }
                 } catch (IOException | UnrecoverableKeyException | CertificateException | KeyStoreException
-                                | KeyManagementException | NoSuchAlgorithmException | JOSEException
-                                | InterruptedException
-                                | URISyntaxException | ParseException e) {
+                                | KeyManagementException | NoSuchAlgorithmException | JOSEException | URISyntaxException
+                                | ParseException e) {
                         logger.log(Level.WARNING, e.getMessage());
+                } catch (InterruptedException ie) {
+                        logger.log(Level.WARNING, "The thread has been interrupted  " + ie.getMessage());
+                        Thread.currentThread().interrupt();
                 }
 
         }
