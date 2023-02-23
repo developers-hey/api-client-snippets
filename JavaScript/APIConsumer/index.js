@@ -28,25 +28,13 @@ app.get('/', (req, res) => {
     }
   };
 
-  async function getSSLContext() {
-    const clientCert = await readFileAsync('resources/Client_KeyStore_test_Lemus.p12');
-    const passphrase = 'Masterkey01';
-  
-    const clientKey = await crypto.createPrivateKey({
-      key: clientCert,
-      format: 'pkcs12',
-      passphrase,
-    });
-  
-    const options = {
-      key: clientKey,
-      passphrase,
-      rejectUnauthorized: true,
-    };
-  
-    return https.createSecureContext(options);
-  }
-getSSLContext();
+  const options = {
+    key: fs.readFileSync('/path/to/client-key.pem'),
+    cert: fs.readFileSync('/path/to/client-cert.pem'),
+    ca: fs.readFileSync('/path/to/ca-cert.pem'),
+    passphrase: 'password'
+  };
+
   request.post(authOptions, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       const token = body.access_token;
@@ -70,6 +58,7 @@ getSSLContext();
 });
 
 
+const httpsServer = https.createServer(options, app);
 
 app.listen(3000, () => {
   console.log('Server listening on port 3000');
