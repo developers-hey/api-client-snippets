@@ -2,10 +2,10 @@
   "name": "api-consumer",
   "version": "1.0.0",
   "description": "consumes an API from a remote server. It includes various properties and methods to make HTTP requests, handle security, and process response data.",
-  "main": "index.js",
+  "main": "APIClient.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node index.js"
+    "debug": "node APIClient.js"
   },
   "repository": {
     "type": "git",
@@ -14,9 +14,10 @@
   "author": "Fernando Cobos Cesario",
   "license": "ISC",
   "dependencies": {
-    "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "request": "^2.88.2"
+    "jose": "^4.13.1",
+    "request": "^2.88.2",
+    "rsa-pem-to-jwk": "^1.1.3"
   }
 }
