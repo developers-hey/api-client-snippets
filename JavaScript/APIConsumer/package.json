@@ -1,0 +1,24 @@
+{
+  "name": "api-consumer",
+  "version": "1.0.0",
+  "description": "consumes an API from a remote server. It includes various properties and methods to make HTTP requests, handle security, and process response data.",
+  "main": "APIClient.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "node APIClient.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.banregio.com:8443/scm/baas-misc/kr-snippets.git"
+  },
+  "author": "Fernando Cobos Cesario",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jose": "^4.13.1",
+    "request": "^2.88.2",
+    "rsa-pem-to-jwk": "^1.1.3",
+    "fs": "^0.0.1-security"
+  }
+}
