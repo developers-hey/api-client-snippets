@@ -15,11 +15,11 @@ dotenv.config();
 
     The certificate and private key files are read and stored in memory
     for later use in HTTPS requests.
-    @constant {string} CERT - The path to the certificate file.
-    @constant {string} PRIVATE_KEY - The path to the private key file.
+    @constant {string} CERT_PATH - The path to the certificate file.
+    @constant {string} PRIVATE_KEY_PATH - The path to the private key file.
     */
-const CERT = fs.readFileSync(process.env.CERT);
-const PRIVATE_KEY = fs.readFileSync(process.env.PRIVATE_KEY);
+const CERT = fs.readFileSync(process.env.CERT_PATH);
+const PRIVATE_KEY = fs.readFileSync(process.env.PRIVATE_KEY_PATH);
 
 const TOKEN_ENDPOINT = '/auth/v1/oidc/token'
 const HTTP_METHOD = 'POST';

@@ -5,7 +5,8 @@
   "main": "APIClient.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node APIClient.js"
+    "debug": "node --inspect-brk=9229 APIClient.js",
+    "start": "node APIClient.js"
   },
   "repository": {
     "type": "git",

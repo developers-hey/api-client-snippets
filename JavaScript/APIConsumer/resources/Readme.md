@@ -96,10 +96,9 @@ const decryptedVerifiedPayload = await securityManager.decryptAndVerifySignPaylo
 
 This module reads the private and public key paths and application id from the .env file. The .env file should have the following structure:
 
-    KEYSTORE_PATH: This key specifies the path to the client keystore file in the APIConsumer project. 
-    KEYSTORE_PASSWORD: This key specifies the password for the client keystore file. 
-    PRIVATEKEY: This key specifies the path to the client private key file in the APIConsumer project. 
-    PUBLICKEY: This key specifies the path to the server public key file in the APIConsumer project. 
+    CERT_PATH: This key specifies the path to the mTLS certificate file file in the APIConsumer project.  
+    PRIVATE_KEY_PATH= This key specifies the path to the client private key file in the APIConsumer project. 
+    PUBLIC_KEY_PATH: This key specifies the path to the server public key file in the APIConsumer project. 
     HOSTNAME: Defines the hostname of the remote server.
     OAUTH_CLIENT_ID: The client ID used to authenticate with the remote server.
     OAUTH_CLIENT_SECRET: The client secret used to authenticate with the remote server.
@@ -114,6 +113,5 @@ Extract the security kit in the path, it is recommended to use the resources pat
 ```openssl
 
   openssl pkcs12 -in Client_KeyStore_test_16723f8c-e2a6-4dd3-a663-572c4a255e69.p12  -nokeys -out cert.pem
-  openssl pkcs12 -in Client_KeyStore_test_16723f8c-e2a6-4dd3-a663-572c4a255e69.p12  -nodes -nocerts -out privatekey.pem
   openssl rsa -passin pass:Password -in Client_test_16723f8c-e2a6-4dd3-a663-572c4a255e69.key > Client_test_16723f8c-e2a6-4dd3-a663-572c4a255e69.pem
   ```
