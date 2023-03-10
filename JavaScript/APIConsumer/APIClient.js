@@ -91,9 +91,12 @@ class APIClient {
     if (!this.accessToken) {
       await this.getAuthorizationToken();
     }
+    let signedEncryptedPayloadJson = null;
+    if (body) {
+      const signedEncryptedPayload = await securityManager.signAndEncryptPayload(body);
+      signedEncryptedPayloadJson = { data: signedEncryptedPayload }
+    }
 
-
-    const signedEncryptedPayload = await securityManager.signAndEncryptPayload(body);
     const options = {
       url: process.env.HOSTNAME + `${this.basePath}${endpoint}`,
       method,
@@ -108,7 +111,7 @@ class APIClient {
         key: PRIVATE_KEY,
         cert: CERT,
       },
-      json: { data: signedEncryptedPayload },
+      json: signedEncryptedPayloadJson ? signedEncryptedPayloadJson : true,
     };
 
     return new Promise((resolve, reject) => {
@@ -116,7 +119,7 @@ class APIClient {
         if (error) {
           reject(error);
         } else {
-          resolve(body);
+          resolve(response);
         }
       });
     });
@@ -130,9 +133,10 @@ Example implement APIClient
 
 */
 const client = new APIClient();
-var endpoint = '/accounts';
-var http_method = 'POST';
-var requestPayload = '{\"taxRegimeId\": 2,\"name\": \"Jose Luis\",\"lastName\": \"Lemus\",\"secondLastName\": \"Valdivia\",\"businessName\": \"\",\"birthday\": \"1996-10-03\",\"rfc\": \"LEVL961003KQ0\",\"curp\": \"LEVL961003HBSMLS06\",\"callingCode\": \"52\",\"cellPhoneNumber\": \"3311065681\",\"email\": \"jose.lemus@banregio.com\",\"nationalityId\": \"001\",\"countryId\": \"01\",\"stateId\": \"047\",\"cityId\": \"04701005\",\"legalRepresentative\": {\"name\": \"\",\"lastName\": \"\",\"secondLastName\": \"\"}}';
+const endpoint = '/accounts';
+const http_method = 'POST';
+const requestPayload = `{"taxRegimeId": 2,"name": "Jose Luis","lastName": "Lemus","secondLastName": "Valdivia","businessName": "","birthday": "1996-10-03","rfc": "LEVL961003KQ0","curp": "LEVL961003HBSMLS06","callingCode": "52","cellPhoneNumber": "3311065681","email": "jose.lemus@banregio.com","nationalityId": "001","countryId": "01","stateId": "047","cityId": "04701005","legalRepresentative": {"name": "","lastName": "","secondLastName": ""}}`;
+
 const headers = {
   'Accept': 'application/json',
   'Content_Type': 'application/json',
@@ -143,8 +147,30 @@ const headers = {
 client.getAuthorizationToken().then((accessToken) => {
   client.makeRequest(endpoint, http_method, requestPayload, headers)
     .then((response) => {
-      console.log(response);
-      
+      console.log(response.headers);
+      console.log(response.body);
+      if (response.headers.location) {
+        const headers = {
+          'Accept': 'application/json',
+          'B_Transaction': '12345678',
+          'Accept_Charset': 'UTF-8'
+        };
+        client.makeRequest(response.headers.location, 'GET', null, headers)
+          .then(async (response) => {
+            console.log(response.headers);
+            console.log(response.body);
+            if (response.body.data) {
+              const decryptedVerifiedPayload = await securityManager.decryptAndVerifySignPayload(response.body.data);
+              console.log(decryptedVerifiedPayload);
+            }
+
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
+
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -152,8 +178,3 @@ client.getAuthorizationToken().then((accessToken) => {
 }).catch((error) => {
   console.error(error);
 });
-
-
-
-
-

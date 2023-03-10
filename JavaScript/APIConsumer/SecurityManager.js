@@ -6,7 +6,6 @@ const fs = require('fs');
 const rsaPemToJwk = require('rsa-pem-to-jwk');
 const dotenv = require('dotenv');
 
-
 dotenv.config();
 
 /**
