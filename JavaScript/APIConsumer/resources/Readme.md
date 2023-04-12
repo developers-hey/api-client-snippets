@@ -6,7 +6,7 @@ This Documentation provides classes to help consume Banking as a Service (BaaS) 
 
 The authentication credentials required to access the BaaS API must have been created. `Spanish translation:`  Se deben haber creado las credenciales de autenticación necesarias para acceder a la API de BaaS. 
 
-## Create .env file `Spanish translation:` Crear un archivo .env.
+## Create .env file `Spanish translation:` Crear un archivo .env
 
 This file reads the private and public key paths and application ID. The .env file should have the following structure. `Spanish translation:` Este archivo lee las rutas de las claves privada y pública y el id de la aplicación. El archivo .env debe tener la siguiente estructura.
 
@@ -16,7 +16,7 @@ This file reads the private and public key paths and application ID. The .env fi
 4. HOSTNAME: Creates the hostname of the remote server. `Spanish translation:` Crea el nombre de host del servidor remoto.
 5. OAUTH_CLIENT_ID: The client ID used to authenticate with the remote server. `Spanish translation:` El ID de cliente utilizado para autenticarse con el servidor remoto.
 6. OAUTH_CLIENT_SECRET: The client secret used to authenticate with the remote server. `Spanish translation:` La clave secreta del cliente utilizada para autenticarse con el servidor remoto.
-7. B_APPLICATION: Unique consumer application identifier, used to sign and encrypt the payload. `Spanish translation:`  Identificador único de la aplicación del consumidor, utilizado para firmar y cifrar la carga útil.
+7. B_APPLICATION: Unique consumer application identifier, used to sign and encrypt the payload. `Spanish translation:`  Identificador único de la aplicación del consumidor, utilizado para firmar y cifrar el payload.
 
 
 
@@ -43,10 +43,10 @@ npm install rsa-pem-to-jwk
 npm install dotenv
 ```
 
-# Usage
+# Usage `Spanish translation:` Uso
 
-## Step 1: Load the keys. `Spanish translation:` Paso 1: Cargar las claves.
-To sign and encrypt a payload, you must first load the private and public keys in PEM format and set them as JWK objects. This is done using the loadKeys function.  It also declares the constants to be used in the module. `Spanish translation:` Para firmar y cifrar una carga útil, primero debes cargar las claves privada y pública en formato PEM y establecerlas como objetos JWK. Esto se hace utilizando la función loadKeys.  También declara las constantes que se utilizarán en el módulo.
+### Step 1: Load the keys. `Spanish translation:` Paso 1: Cargar las claves.
+To sign and encrypt a payload, you must first load the private and public keys in PEM format and set them as JWK objects. This is done using the loadKeys function.  It also declares the constants to be used in the module. `Spanish translation:` Para firmar y cifrar el payload, primero debes cargar las claves privada y pública en formato PEM y establecerlas como objetos JWK. Esto se hace utilizando la función loadKeys.  También declara las constantes que se utilizarán en el módulo.
 ```javascript
   
 const algorithm = 'RSA'
@@ -63,9 +63,9 @@ function loadKeys() {
 ```
 
 
-## Step 2: Creates the function to sign and encrypt the payload. `Spanish translation:` Paso 2: Crea la función para firmar y encriptar el payload.
+### Step 2: Creates the function to sign and encrypt the payload. `Spanish translation:` Paso 2: Crea la función para firmar y encriptar el payload.
 
-To sign and encrypt a payload, use the signAndEncryptPayload(requestPayload) function. This function takes the payload to be signed and encrypted as an argument and returns the signed and encrypted payload as a string. `Spanish translation:` Para firmar y cifrar una carga útil, utilice la función signAndEncryptPayload(requestPayload). Esta función toma la carga útil que se va a firmar y cifrar como argumento y devuelve la carga útil firmada y cifrada como una cadena.
+To sign and encrypt a payload, use the signAndEncryptPayload(requestPayload) function. This function takes the payload to be signed and encrypted as an argument and returns the signed and encrypted payload as a string. `Spanish translation:` Para firmar y cifrar el payload, utilice la función signAndEncryptPayload(requestPayload). Esta función toma el payload que se va a firmar y cifrar como argumento y devuelve el payload firmado y cifrado como una cadena.
 
 ```javascript
 async function signAndEncryptPayload(requestPayload) {
@@ -87,9 +87,9 @@ async function signAndEncryptPayload(requestPayload) {
 }
 
 ```
-## Step 3: Create the function to decrypt and verify the signed payload. `Spanish translation:` Paso 3: Crea la función para descifrar y verificar la carga firmada.
+### Step 3: Create the function to decrypt and verify the signed payload. `Spanish translation:` Paso 3: Crea la función para descifrar y verificar la carga firmada.
 
-To decrypt and verify the signature of a JWE/JWS payload, use the decryptAndVerifySignPayload(responsePayload) function. This function takes the JWE/JWS payload to be decrypted and verified as an argument and returns the decrypted and verified payload as a string. `Spanish translation:`
+To decrypt and verify the signature of a JWE/JWS payload, use the decryptAndVerifySignPayload(responsePayload) function. This function takes the JWE/JWS payload to be decrypted and verified as an argument and returns the decrypted and verified payload as a string. `Spanish translation:` Para descifrar y verificar la firma de un payload JWE/JWS, utilice la función decryptAndVerifySignPayload(responsePayload). Esta función toma el payload JWE/JWS que debe descifrarse y verificarse como argumento y devuelve el payload descifrado y verificado como cadena.
 ```javascript
 async function decryptAndVerifySignPayload(responsePayload) {
     loadKeys();
@@ -102,7 +102,7 @@ async function decryptAndVerifySignPayload(responsePayload) {
 }
 
 ```
-## Step 4:  Export the created funcions. `Spanish translation:` Paso 3: Exporta las funciónes creadas.
+### Step 4:  Export the created funcions. `Spanish translation:` Paso 3: Exporta las funciónes creadas.
 ```javascript
 module.exports =
 {
@@ -112,15 +112,15 @@ module.exports =
 ```
 
 
-# APIClient Module.  `Spanish translation:` Módulo APIClient.
+# APIClient Module  `Spanish translation:` Módulo APIClient
 
-## Description.  `Spanish translation:` Descripción.
+## Description  `Spanish translation:` Descripción
 This module exports the APIClient class, which provides a simple way to make HTTP requests to an API using OAuth 2.0 authentication with client credentials grant flow and encrypted payloads. `Spanish translation:` Este módulo exporta la clase APIClient, que proporciona una forma sencilla de realizar peticiones HTTP a una API utilizando autenticación OAuth 2.0 con flujo de concesión de credenciales de cliente y cargas útiles cifradas.
 
 
 # Usage `Spanish translation:` Uso
 
-## Step 1: Create ApiClient and declare attributes. `Spanish translation:`  Crear el ApiClient y declarar atributos.
+### Step 1: Create ApiClient and declare attributes. `Spanish translation:`  Crear el ApiClient y declarar atributos.
 
 Create the ApiClient class where the SecurityManager class is defined. Then, declare the following attributes. `Spanish translation:` Cree la clase ApiClient donde se define la clase SecurityManager. Luego, declare los siguientes atributos.
 
@@ -135,7 +135,7 @@ const HEADER_VALUE = 'application/x-www-form-urlencoded';
 const OAUTH_GRANT_TYPE_VALUE = 'client_credentials';
 ```
 
-### 1.1 Create an ApiClient constructor object with the specified parameters. `Spanish translation:` Crea un constructor ApiClient con los parámetros
+### 1.1 Create an ApiClient constructor object with the specified parameters. `Spanish translation:` Crea un constructor ApiClient con los parámetros.
 
 ```javascript
   constructor() {
@@ -145,8 +145,8 @@ const OAUTH_GRANT_TYPE_VALUE = 'client_credentials';
     this.accessToken = null;
   }
 ```
-## Step 2 Creates getAuthorizationToken method `Spanish translation:` Paso 2 Crea el método getAuthorizationToken
-Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de cliente y el secreto de cliente.
+### Step 2 Creates getAuthorizationToken method. `Spanish translation:` Paso 2 Crea el método getAuthorizationToken.
+Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de cliente y laclave secreta de cliente.
 ```javascript
   getAuthorizationToken() {
     const options = {
@@ -180,7 +180,7 @@ Generates an authorization token using client credentials grant type. This metho
 
 
 ```
-## Step 3: Creates the makeRequest method. `Spanish translation:` Crea el método makeRequest.
+### Step 3: Creates the makeRequest method. `Spanish translation:` Crea el método makeRequest.
 
 Makes a request to the API using the provided parameters and access token. The body of the request is signed and encrypted before being sent, and the data is returned in JSON format. It returns a promise that resolves to the request response. `Spanish translation:` Realiza una solicitud a la API utilizando los parámetros y el token de acceso proporcionados. El cuerpo de la solicitud se firma y encripta antes de enviarse, y los datos se devuelven en formato JSON. Devuelve una promesa que resuelve la respuesta a la solicitud.
 
@@ -224,7 +224,7 @@ Makes a request to the API using the provided parameters and access token. The b
   }
 
 ```
-## Example implementation of an API client  ` Spanish translation:` Ejemplo de implementación de un cliente API.
+## Example implementation of an API client.  ` Spanish translation:` Ejemplo de implementación de un cliente API.
 
  Example of an API client implementation using the modules described in the previous steps. ` Spanish translation:` Ejemplo de implementación de un cliente API utilizando los módulos descritos en los pasos anteriores.
 
@@ -237,19 +237,19 @@ const fs = require('fs');
 dotenv.config();
 
 ```
-### Step 1: Creates an instance of the APIClient client, which will be used to make requests to a server. ` Spanish translation:` Paso1: Crea una instancia del cliente APIClient, que se utilizará para realizar solicitudes a un servidor.
+### Step 1: Creates an instance of the APIClient client, which will be used to make requests to a server. ` Spanish translation:` Paso 1: Crea una instancia del cliente APIClient, que se utilizará para realizar solicitudes a un servidor.
 
 ```javascript
 const client = new APIClient();
 ```
 
- ### Step 2: Creates the endpoint, HTTP method and payload to be sent with the request. ` Spanish translation:` Paso 2: Crea el endpoint, el método HTTP y la carga útil que se enviará con la solicitud. 
+ ### Step 2: Creates the endpoint, HTTP method and payload to be sent with the request. ` Spanish translation:` Paso 2: Crea el endpoint, el método HTTP y el payload que se enviará con la solicitud. 
  ```javascript
 const endpoint = '/accounts';
 const http_method = 'POST';
 const requestPayload = `{"taxRegimeId": 2,"name": "Jose Luis","lastName": "Lemus","secondLastName": "Valdivia","businessName": "","birthday": "1996-10-03","rfc": "LEVL961003KQ0","curp": "LEVL961003HBSMLS06","callingCode": "52","cellPhoneNumber": "3311065681","email": "jose.lemus@banregio.com","nationalityId": "001","countryId": "01","stateId": "047","cityId": "04701005","legalRepresentative": {"name": "","lastName": "","secondLastName": ""}}`;
  ```
-### Step 3: Creates the application headers ` Spanish translation:` Paso 3: Crea las cabeceras de la aplicación
+### Step 3: Creates the application headers. ` Spanish translation:` Paso 3: Crea las cabeceras de la aplicación.
  ```javascript
 const headers = {
   'Accept': 'application/json',
@@ -267,7 +267,7 @@ client.getAuthorizationToken().then((accessToken) => {
   console.error(error);
 });
  ```
-### Step 5: Make the API request with the signed and encrypted payload, in addition print the response. ` Spanish translation:` Paso 5: Realizar la petición API con la carga útil firmada y encriptada, además imprima la respuesta.
+### Step 5: Make the API request with the signed and encrypted payload, in addition print the response. ` Spanish translation:` Paso 5: Realizar la petición API con el payload firmado y encriptado, además imprima la respuesta.
  ```javascript
 client.getAuthorizationToken().then((accessToken) => {
   client.makeRequest(endpoint, http_method, requestPayload, headers)
