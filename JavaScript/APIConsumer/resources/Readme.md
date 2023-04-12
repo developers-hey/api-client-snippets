@@ -7,10 +7,9 @@ This Documentation provides classes to help consume Banking as a Service (BaaS) 
 The authentication credentials required to access the BaaS API must have been created. `Spanish translation:`  Se deben haber creado las credenciales de autenticación necesarias para acceder a la API de BaaS. 
 
 ## Create .env file `Spanish translation:` Crear un archivo .env
+This file reads the private and public key paths and the application ID. The .env file should have the following structure. `Spanish translation:` Este archivo lee las rutas de las claves privada y pública y el id de la aplicación. El archivo .env debe tener la siguiente estructura.
 
-This file reads the private and public key paths and application ID. The .env file should have the following structure. `Spanish translation:` Este archivo lee las rutas de las claves privada y pública y el id de la aplicación. El archivo .env debe tener la siguiente estructura.
-
-1. CERT_PATH: This key specifies the path to the mTLS certificate file  in the APIConsumer project. `Spanish translation:` Esta clave especifica la ruta al archivo del certificado mTLS en el proyecto APIConsumer.
+1. CERT_PATH: This key specifies the path to the mTLS certificate file in the APIConsumer project. `Spanish translation:` Esta clave especifica la ruta al archivo del certificado mTLS en el proyecto APIConsumer.
 2. PRIVATE_KEY_PATH: This key specifies the path to the client private key file in the APIConsumer project. `Spanish translation:` Esta clave especifica la ruta al archivo de la clave privada del cliente en el proyecto APIConsumer. 
 3. PUBLIC_KEY_PATH: This key specifies the path to the server public key file in the APIConsumer project. `Spanish translation:` Esta clave especifica la ruta al archivo de clave pública del servidor en el proyecto APIConsumer. 
 4. HOSTNAME: Creates the hostname of the remote server. `Spanish translation:` Crea el nombre de host del servidor remoto.
@@ -31,7 +30,7 @@ Extract the security kit in the path, it is recommended to use the resources pat
   ```
 
 ## Module SecurityManager `Spanish translation:` Módulo SecurityManager
-This module provides methods for signing and encrypting payloads, and decrypting and verifying signed payloads. `Spanish translation:` Este módulo proporciona métodos para firmar y cifrar cargas útiles, y descifrar y verificar cargas útiles firmadas.
+This module provides methods for signing and encrypting payloads, and decrypting and verifying signed payloads. `Spanish translation:` Este módulo proporciona métodos para firmar y cifrar payloads, y descifrar y verificar payloads firmados.
 
 
 The module makes use of the following libraries.  `Spanish translation:` El módulo hace uso de las siguientes bibliotecas.
@@ -115,7 +114,7 @@ module.exports =
 # APIClient Module  `Spanish translation:` Módulo APIClient
 
 ## Description  `Spanish translation:` Descripción
-This module exports the APIClient class, which provides a simple way to make HTTP requests to an API using OAuth 2.0 authentication with client credentials grant flow and encrypted payloads. `Spanish translation:` Este módulo exporta la clase APIClient, que proporciona una forma sencilla de realizar peticiones HTTP a una API utilizando autenticación OAuth 2.0 con flujo de concesión de credenciales de cliente y cargas útiles cifradas.
+This module exports the APIClient class, which provides a simple way to make HTTP requests to an API using OAuth 2.0 authentication with client credentials grant flow and encrypted payloads. `Spanish translation:` Este módulo exporta la clase APIClient, que proporciona una forma sencilla de realizar peticiones HTTP a una API utilizando autenticación OAuth 2.0 con flujo de concesión de credenciales de cliente y payloads cifrados.
 
 
 # Usage `Spanish translation:` Uso
@@ -146,7 +145,7 @@ const OAUTH_GRANT_TYPE_VALUE = 'client_credentials';
   }
 ```
 ### Step 2 Creates getAuthorizationToken method. `Spanish translation:` Paso 2 Crea el método getAuthorizationToken.
-Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de cliente y laclave secreta de cliente.
+Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de cliente y la clave secreta de cliente.
 ```javascript
   getAuthorizationToken() {
     const options = {
