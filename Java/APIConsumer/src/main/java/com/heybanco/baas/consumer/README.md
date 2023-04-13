@@ -21,7 +21,7 @@ This file reads the private and public key paths and the application ID. The con
 
 # Create the SecurityManager class `Spanish translation:` Crea la clase SecurityManager
 
-The SecurityManager class is part of the com.heybanco.baas.consumer package and provides methods for generating an authorization token, sending HTTP requests, signing and encrypting payloads, and decrypting and verifying signed payloads. `Spanish translation:` La clase SecurityManager forma parte del paquete com.heybanco.baas.consumer y proporciona métodos para generar un token de autorización, enviar peticiones HTTP, firmar y cifrar cargas útiles, y descifrar y verificar cargas útiles firmadas.
+The SecurityManager class is part of the com.heybanco.baas.consumer package and provides methods for generating an authorization token, sending HTTP requests, signing and encrypting payloads, and decrypting and verifying signed payloads. `Spanish translation:` La clase SecurityManager forma parte del paquete com.heybanco.baas.consumer y proporciona métodos para generar un token de autorización, enviar peticiones HTTP, firmar y cifrar payloads, y descifrar y verificar payloads firmados.
 
 
 This class depends on the following external libraries. `Spanish translation:` Esta clase depende de las siguientes bibliotecas externas.
@@ -32,7 +32,7 @@ This class depends on the following external libraries. `Spanish translation:` E
 
 ## Usage `Spanish translation:` Uso
 
-Step 1: Define the SecurityManager class with the following variables and builds an SecurityManager object with the specified Properties `Spanish translation:` Define la clase SecurityManager con las siguientes variables y construye un objeto SecurityManager con las Propiedades especificadas
+Step 1: Define the SecurityManager class with the following variables and builds an SecurityManager object with the specified Properties `Spanish translation:` Paso 1: Define la clase SecurityManager con las siguientes variables y construye un objeto SecurityManager con las Propiedades especificadas
 
 ```java
 package com.heybanco.baas.consumer;
@@ -77,8 +77,8 @@ public class SecurityManager {
 
 
 ```
-Step 2 Creates getAuthorizationToken method. `Spanish translation:` Paso 2 Crea el método getAuthorizationToken.
-Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de cliente y la clave secreta de cliente.
+Step 2: Creates getAuthorizationToken method. `Spanish translation:` Paso 2 Crea el método getAuthorizationToken.
+Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Paso 2: Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de cliente y la clave secreta de cliente.
 ```java
    public String getAuthorizationToken()
             throws IOException, UnrecoverableKeyException, CertificateException, KeyStoreException,
@@ -100,7 +100,7 @@ Generates an authorization token using client credentials grant type. This metho
     }
 ```
 
-Step 3 Creates the method to sign and encrypt the payload. `Spanish translation:` Paso 3 Crea el método para firmar y encriptar el payload.
+Step 3: Creates the method to sign and encrypt the payload. `Spanish translation:` Paso 3: Crea el método para firmar y encriptar el payload.
 ```java
     public String signAndEncryptPayload(String requestPayload, String bApplication) throws IOException, JOSEException {
         loadKeys();
@@ -115,7 +115,7 @@ Step 3 Creates the method to sign and encrypt the payload. `Spanish translation:
         return jweObject.serialize();
     }
 ```
-Step 4 Create the method  to decrypt and verify the signed payload. `Spanish translation:` Paso 4 Crea el método para descifrar y verificar la carga firmada.
+Step 4: Create the method  to decrypt and verify the signed payload. `Spanish translation:` Paso 4: Crea el método para descifrar y verificar el payload firmado.
 
 ```java
   public String decryptAndVerifySignPayload(String requestPayload) throws IOException, ParseException, JOSEException {
@@ -129,7 +129,7 @@ Step 4 Create the method  to decrypt and verify the signed payload. `Spanish tra
         return jwsObject.verify(verifier) ? jwsObject.getPayload().toString() : "";
     }
 ```
-Step 5 Creates getSSLContext method. `Spanish translation:` Paso 5 Crea el método getSSLContext. 
+Step 5: Creates getSSLContext method. `Spanish translation:` Paso 5: Crea el método getSSLContext. 
 
 Obtains an SSL context with the specified key store and password. `Spanish translation:` Obtiene un contexto SSL con el almacén de claves y la contraseña especificados.
 ```java
@@ -146,7 +146,7 @@ Obtains an SSL context with the specified key store and password. `Spanish trans
         return sslContext;
     }
 ```
-Step 6 Creates loadKeys method. `Spanish translation:` Paso 6 Crea el método loadKeys. 
+Step 6: Creates loadKeys method. `Spanish translation:` Paso 6: Crea el método loadKeys. 
 
 Parses the private and public keys in PEM format and sets them as JWK objects. `Spanish translation:` Analiza las claves privada y pública en formato PEM y las establece como objetos JWK.
 ```java
@@ -170,7 +170,7 @@ Reads the contents of a file as a string. `Spanish translation:` Lee el contenid
 The APIConsumer class is part of the com.heybanco.baas.consumer package. It is an example implementation of an API client that uses the SecurityManager class described in the previous steps. `Spanish translation:` La clase APIConsumer forma parte del paquete com.heybanco.baas.consumer. Es un ejemplo de implementación de un cliente API que utiliza la clase SecurityManager descrita en los pasos anteriores.
 
 
-Step 1 Define the ApiConsumer class with the following variables. `Spanish translation:` Define la clase ApiConsumer con las siguientes variables.
+Step 1: Define the ApiConsumer class with the following variables. `Spanish translation:` Paso 1: Define la clase ApiConsumer con las siguientes variables.
 
 ```java
 
@@ -191,7 +191,7 @@ public class ApiConsumer {
 }
 
 ```
-Step 2 Define el método main() dentro de la clase ApiConsumer, create a Properties object to store the configuration properties and create a new instance of the SecurityManager class. `Spanish translation:` Define el método main() dentro de la clase ApiConsumer, crea un objeto Properties para almacenar las propiedades de configuración y crea una nueva instancia de la clase SecurityManager.
+Step 2: Define the main() method within the ApiConsumer class, create a Properties object to store the configuration properties and create a new instance of the SecurityManager class. `Spanish translation:` Paso 2: Define el método main() dentro de la clase ApiConsumer, crea un objeto Properties para almacenar las propiedades de configuración y crea una nueva instancia de la clase SecurityManager.
 
 ```java
 public static void main(String[] args) {
@@ -200,7 +200,7 @@ public static void main(String[] args) {
 }
 
 ```
-Step 3 Load the configuration properties from the config.properties file. `Spanish translation:` Cargar las propiedades de configuración desde el archivo config.properties.
+Step 3: Load the configuration properties from the config.properties file. `Spanish translation:` Paso3: Cargar las propiedades de configuración desde el archivo config.properties.
 
 ```java
 
@@ -212,28 +212,28 @@ Step 3 Load the configuration properties from the config.properties file. `Spani
     logger.log(Level.WARNING, "Error loading configuration properties: " + e.getMessage());
 }
 ```
-Step 4 Generate an authorization token. `Spanish translation:` Paso 4 Generar un token de autorización.
+Step 4: Generate an authorization token. `Spanish translation:` Paso 4: Generar un token de autorización.
 ```java
  JsonObject jsonResponse = JsonParser.parseString(securityManager.getAuthorizationToken())
                                         .getAsJsonObject();
-                        String accessToken = jsonResponse.get("access_token").getAsString();
+String accessToken = jsonResponse.get("access_token").getAsString();
 
 ```
- Step 5 Define headers and request body. ` Spanish translation:` Paso 5 Definir las cabeceras y el cuerpo de la solicitud.
+ Step 5: Define headers and request body. ` Spanish translation:` Paso 5: Definir las cabeceras y el cuerpo de la solicitud.
 
  ```java
  Map<String, String> headers = new HashMap<String, String>() {
-                        };
-                        headers.put("Accept", "application/json");
-                        headers.put("Content-Type", "application/json");
-                        headers.put("B-Transaction", "123456789");
-                        headers.put("Accept-Charset", "UTF-8");
-                        headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
-                        headers.put("Authorization", "Bearer " + accessToken);
-                        String requestPayload = "{\"taxRegimeId\": 2,\"name\": \"Jose Luis\",\"lastName\": \"Lemus\",\"secondLastName\": \"Valdivia\",\"businessName\": \"\",\"birthday\": \"1996-10-03\",\"rfc\": \"LEVL961003KQ0\",\"curp\": \"LEVL961003HBSMLS06\",\"callingCode\": \"52\",\"cellPhoneNumber\": \"3311065681\",\"email\": \"jose.lemus@banregio.com\",\"nationalityId\": \"001\",\"countryId\": \"01\",\"stateId\": \"047\",\"cityId\": \"04701005\",\"legalRepresentative\": {\"name\": \"\",\"lastName\": \"\",\"secondLastName\": \"\"}}";
+};
+headers.put("Accept", "application/json");
+headers.put("Content-Type", "application/json");
+headers.put("B-Transaction", "123456789");
+headers.put("Accept-Charset", "UTF-8");
+headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
+headers.put("Authorization", "Bearer " + accessToken);
+String requestPayload = "{\"taxRegimeId\": 2,\"name\": \"Jose Luis\",\"lastName\": \"Lemus\",\"secondLastName\": \"Valdivia\",\"businessName\": \"\",\"birthday\": \"1996-10-03\",\"rfc\": \"LEVL961003KQ0\",\"curp\": \"LEVL961003HBSMLS06\",\"callingCode\": \"52\",\"cellPhoneNumber\": \"3311065681\",\"email\": \"jose.lemus@banregio.com\",\"nationalityId\": \"001\",\"countryId\": \"01\",\"stateId\": \"047\",\"cityId\": \"04701005\",\"legalRepresentative\": {\"name\": \"\",\"lastName\": \"\",\"secondLastName\": \"\"}}";
 ```
 
-Step 6 Sign and encrypt the request body and convert the signed and encrypted payload to JSON. ` Spanish translation:` Paso 6 Firmar y cifrar el cuerpo de la solicitud y convertir el payload firmado y cifrado a JSON.
+Step 6: Sign and encrypt the request body and convert the signed and encrypted payload to JSON. ` Spanish translation:` Paso 6: Firmar y cifrar el cuerpo de la solicitud y convertir el payload firmado y cifrado a JSON.
 
  ```java
   String encryptedPayload = securityManager.signAndEncryptPayload(requestPayload,
@@ -242,47 +242,47 @@ Step 6 Sign and encrypt the request body and convert the signed and encrypted pa
 
 ```
 
- Step 7 Make the API request with the signed and encrypted payload. And Print the response. ` Spanish translation:` Paso 7 Realizar la petición API con el payload firmado y encriptado. E Imprime la respuesta.
+ Step 7: Make the API request with the signed and encrypted payload. And Print the response. ` Spanish translation:` Paso 7: Realizar la petición API con el payload firmado y encriptado. E Imprime la respuesta.
 
  ```java
 HttpClient httpClient = HttpClient.newBuilder()
                                         .sslContext(securityManager.getSSLContext())
                                         .build();
-                        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
-                                                        + ENDPOINT)))
-                                        .method(method, HttpRequest.BodyPublishers.ofString(requestPayload));
-                        headers.forEach(requestBuilder::header);
-                        HttpResponse<String> response = httpClient.send(requestBuilder.build(),
-                                        HttpResponse.BodyHandlers.ofString());
-                        String responseHeaders = response.headers().map().toString();
-                        String responseBody = response.body();
-                        logger.log(Level.INFO, "Response headers: " + responseHeaders);
-                        logger.log(Level.INFO, "Response body: " + responseBody);
-                        Optional<String> locationHeader = response.headers().firstValue("location");
+HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
+                    + ENDPOINT)))
+                    .method(method, HttpRequest.BodyPublishers.ofString(requestPayload));
+headers.forEach(requestBuilder::header);
+HttpResponse<String> response = httpClient.send(requestBuilder.build(),
+HttpResponse.BodyHandlers.ofString());
+String responseHeaders = response.headers().map().toString();
+String responseBody = response.body();
+logger.log(Level.INFO, "Response headers: " + responseHeaders);
+logger.log(Level.INFO, "Response body: " + responseBody);
+Optional<String> locationHeader = response.headers().firstValue("location");
 
 ```
 
- Step 8 Validates if the request was successful and makes another request to the API to query the Id information obtained in the previous request. ` Spanish translation:` Paso 8 Valida si la petición se ha realizado correctamente y realiza otra petición a la API para consultar la información de Id obtenida en la petición anterior.
+ Step 8: Validates if the request was successful and makes another request to the API to query the Id information obtained in the previous request. ` Spanish translation:` Paso 8: Valida si la petición se ha realizado correctamente y realiza otra petición a la API para consultar la información de Id obtenida en la petición anterior.
 
  ```java
-                        if (locationHeader.isPresent()) {
-                                requestBuilder = HttpRequest.newBuilder()
-                                                .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
-                                                                + locationHeader.get())))
-                                                .GET();
-                                headers.remove("Content-Type");
-                                headers.forEach(requestBuilder::header);
-                                HttpResponse<String> responseEncript = httpClient.send(requestBuilder.build(),
-                                                HttpResponse.BodyHandlers.ofString());
-                                String responseBodyEncrypt = responseEncript.body();
-                                logger.log(Level.INFO, "Response body encrypted: " + responseBodyEncrypt);
-                                jsonResponse = JsonParser.parseString(responseBodyEncrypt).getAsJsonObject();
+if (locationHeader.isPresent()) {
+    requestBuilder = HttpRequest.newBuilder()
+    .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
+    + locationHeader.get())))
+    .GET();
+    headers.remove("Content-Type");
+    headers.forEach(requestBuilder::header);
+    HttpResponse<String> responseEncript = httpClient.send(requestBuilder.build(),
+                         HttpResponse.BodyHandlers.ofString());
+    String responseBodyEncrypt = responseEncript.body();
+    logger.log(Level.INFO, "Response body encrypted: " + responseBodyEncrypt);
+    jsonResponse = JsonParser.parseString(responseBodyEncrypt).getAsJsonObject();
 
-                        }
+}
 
 ```
-Step 9 If the encrypted response body is not empty, decrypt and verify the signed payload. ` Spanish translation:` Paso 9: Si el cuerpo de la respuesta cifrada no está vacío, descifre y verifique el payload firmado.
+Step 9: If the encrypted response body is not empty, decrypt and verify the signed payload. ` Spanish translation:` Paso 9: Si el cuerpo de la respuesta cifrada no está vacío, descifre y verifique el payload firmado.
 
  ```java
                         
