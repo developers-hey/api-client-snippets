@@ -12,7 +12,7 @@ This file reads the private and public key paths and the application ID. The .en
 1. CERT_PATH: This key specifies the path to the mTLS certificate file in the APIConsumer project. `Spanish translation:` Esta clave especifica la ruta al archivo del certificado mTLS en el proyecto APIConsumer.
 2. PRIVATE_KEY_PATH: This key specifies the path to the client private key file in the APIConsumer project. `Spanish translation:` Esta clave especifica la ruta al archivo de la clave privada del cliente en el proyecto APIConsumer. 
 3. PUBLIC_KEY_PATH: This key specifies the path to the server public key file in the APIConsumer project. `Spanish translation:` Esta clave especifica la ruta al archivo de clave pública del servidor en el proyecto APIConsumer. 
-4. HOSTNAME: Creates the hostname of the remote server. `Spanish translation:` Crea el nombre de host del servidor remoto.
+4. HOSTNAME: Defines the hostname of the remote server. `Spanish translation:` Define el hostname del servidor remoto.
 5. OAUTH_CLIENT_ID: The client ID used to authenticate with the remote server. `Spanish translation:` El ID de cliente utilizado para autenticarse con el servidor remoto.
 6. OAUTH_CLIENT_SECRET: The client secret used to authenticate with the remote server. `Spanish translation:` La clave secreta del cliente utilizada para autenticarse con el servidor remoto.
 7. B_APPLICATION: Unique consumer application identifier, used to sign and encrypt the payload. `Spanish translation:`  Identificador único de la aplicación del consumidor, utilizado para firmar y cifrar el payload.
