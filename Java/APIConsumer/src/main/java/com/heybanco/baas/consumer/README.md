@@ -2,9 +2,9 @@
 
 This Documentation provides classes to help consume Banking as a Service (BaaS) APIs in a secure manner. These classes implement security best practices to ensure that user data is protected. `Spanish translation:` Esta documentación proporciona clases para ayudar a consumir las API de Banking as a Service (BaaS) de forma segura. Estas clases implementan las mejores prácticas de seguridad para garantizar la protección de los datos de los usuarios.
 
-### Prerequisites `Spanish translation:`  Requisitos previos 
+### Prerequisites `Spanish translation:` Requisitos previos 
 
-The authentication credentials required to access the BaaS API must have been created. `Spanish translation:`  Se deben haber creado las credenciales de autenticación necesarias para acceder a la API de BaaS. 
+The authentication credentials required to access the BaaS API must have been created. `Spanish translation:` Se deben haber creado las credenciales de autenticación necesarias para acceder a la API de BaaS. 
 
 ## Create config.properties file `Spanish translation:` Crear archivo config.properties
 
@@ -17,7 +17,7 @@ This file reads the private and public key paths and the application ID. The con
 5. HOSTNAME: Defines the hostname of the remote server. `Spanish translation:` Define el hostname del servidor remoto. 
 6. OAUTH_CLIENT_ID: The client ID used to authenticate with the remote server. `Spanish translation:` El ID de cliente utilizado para autenticarse con el servidor remoto. 
 7. OAUTH_CLIENT_SECRET: The client secret used to authenticate with the remote server. `Spanish translation:` La clave secreta del cliente utilizada para autenticarse con el servidor remoto.
-8. B_APPLICATION: nique consumer application identifier, used to sign and encrypt the payload. `Spanish translation:`  Identificador único de la aplicación del consumidor, utilizado para firmar y cifrar el payload.
+8. B_APPLICATION: Unique consumer application identifier, used to sign and encrypt the payload. `Spanish translation:` Identificador único de la aplicación del consumidor, utilizado para firmar y cifrar el payload.
 
 # Create the SecurityManager class `Spanish translation:` Crea la clase SecurityManager
 
@@ -32,7 +32,7 @@ This class depends on the following external libraries. `Spanish translation:` E
 
 ## Usage `Spanish translation:` Uso
 
-Step 1: Define the SecurityManager class with the following variables and builds an SecurityManager object with the specified Properties  `Spanish translation:` Define la clase SecurityManager con las siguientes variables y construye un objeto SecurityManager con las Propiedades especificadas
+Step 1: Define the SecurityManager class with the following variables and builds an SecurityManager object with the specified Properties `Spanish translation:` Define la clase SecurityManager con las siguientes variables y construye un objeto SecurityManager con las Propiedades especificadas
 
 ```java
 package com.heybanco.baas.consumer;
@@ -263,7 +263,7 @@ HttpClient httpClient = HttpClient.newBuilder()
 
 ```
 
- Step 8 Validates if the request was successful and makes another request to the API to query the Id information obtained in the previous request.  ` Spanish translation:` Paso 8 Valida si la petición se ha realizado correctamente y realiza otra petición a la API para consultar la información de Id obtenida en la petición anterior.
+ Step 8 Validates if the request was successful and makes another request to the API to query the Id information obtained in the previous request. ` Spanish translation:` Paso 8 Valida si la petición se ha realizado correctamente y realiza otra petición a la API para consultar la información de Id obtenida en la petición anterior.
 
  ```java
                         if (locationHeader.isPresent()) {
