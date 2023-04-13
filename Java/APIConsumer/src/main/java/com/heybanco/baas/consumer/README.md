@@ -71,7 +71,7 @@ public class SecurityManager {
     private final Properties properties;
 
         public SecurityManager(Properties properties) {
-        this.properties = properties;
+         this.properties = properties;
     }
 }
 
@@ -187,7 +187,6 @@ public class ApiConsumer {
     private static final String BASE_PATH = "/taas/v1.0";
     private static final String ENDPOINT = "/accounts";
     String method = "POST";
-    ...
 }
 
 ```
@@ -204,12 +203,12 @@ Step 3: Load the configuration properties from the config.properties file. `Span
 
 ```java
 
- try {
-    FileInputStream input = new FileInputStream("../APIConsumer/src/main/resources/config.properties");
-    properties.load(input);
-    input.close();
+try {
+      FileInputStream input = new FileInputStream("../APIConsumer/src/main/resources/config.properties");
+      properties.load(input);
+      input.close();
 } catch (IOException e) {
-    logger.log(Level.WARNING, "Error loading configuration properties: " + e.getMessage());
+      logger.log(Level.WARNING, "Error loading configuration properties: " + e.getMessage());
 }
 ```
 Step 4: Generate an authorization token. `Spanish translation:` Paso 4: Generar un token de autorización.
