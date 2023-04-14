@@ -77,8 +77,11 @@ public class SecurityManager {
 
 
 ```
-Step 2: Creates getAuthorizationToken method. `Spanish translation:` Paso 2 Crea el método getAuthorizationToken.
-Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Paso 2: Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de cliente y la clave secreta de cliente.
+Step 2: Creates getAuthorizationToken method. `Spanish translation:` Paso 2: Crea el método getAuthorizationToken.
+
+Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Paso 2: Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de 
+cliente y la clave secreta de cliente.
+
 ```java
    public String getAuthorizationToken()
             throws IOException, UnrecoverableKeyException, CertificateException, KeyStoreException,
@@ -156,7 +159,7 @@ Parses the private and public keys in PEM format and sets them as JWK objects. `
     }	
 
 ```
-Step 7 Creates readFile method. `Spanish translation:` Paso 7 Crea el método readFile. 
+Step 7: Creates readFile method. `Spanish translation:` Paso 7: Crea el método readFile. 
 
 Reads the contents of a file as a string. `Spanish translation:` Lee el contenido de un fichero como cadena.
 ```java
@@ -241,7 +244,7 @@ Step 6: Sign and encrypt the request body and convert the signed and encrypted p
 
 ```
 
- Step 7: Make the API request with the signed and encrypted payload. And Print the response. ` Spanish translation:` Paso 7: Realizar la petición API con el payload firmado y encriptado. E Imprime la respuesta.
+ Step 7: Make the API request with the signed and encrypted payload, in addition print the response.` Spanish translation:` Paso 7: Realizar la petición API con el payload firmado y encriptado, además imprima la respuesta.
 
  ```java
 HttpClient httpClient = HttpClient.newBuilder()
@@ -262,7 +265,7 @@ Optional<String> locationHeader = response.headers().firstValue("location");
 
 ```
 
- Step 8: Validates if the request was successful and makes another request to the API to query the Id information obtained in the previous request. ` Spanish translation:` Paso 8: Valida si la petición se ha realizado correctamente y realiza otra petición a la API para consultar la información de Id obtenida en la petición anterior.
+ Step 8: Validates if the request was successful and makes another request to the API to query the ID information obtained in the previous request. ` Spanish translation:` Paso 8: Valida si la petición se ha realizado correctamente y realiza otra petición a la API para consultar la información del ID obtenido en la petición anterior.
 
  ```java
 if (locationHeader.isPresent()) {
