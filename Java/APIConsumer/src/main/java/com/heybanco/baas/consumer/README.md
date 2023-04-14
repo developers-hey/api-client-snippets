@@ -79,7 +79,7 @@ public class SecurityManager {
 ```
 Step 2: Creates getAuthorizationToken method. `Spanish translation:` Paso 2: Crea el método getAuthorizationToken.
 
-Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:` Paso 2: Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de 
+Generates an authorization token using client credentials grant type. This method makes a POST request to a specified token URL with the client ID and client secret. `Spanish translation:`  Genera un token de autorización utilizando el tipo de concesión de credenciales de cliente. Este método realiza una solicitud POST a una URL de token especificada con el ID de 
 cliente y la clave secreta de cliente.
 
 ```java
