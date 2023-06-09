@@ -1,0 +1,13 @@
+cepmex==0.2.1
+certifi==2023.5.7
+charset-normalizer==2.0.12
+clabe==1.2.9
+idna==3.4
+lxml==4.9.2
+pydantic==1.10.8
+requests==2.26.0
+typing_extensions==4.6.2
+urllib3==1.26.16
+pyopenssl==23.2.0
+cryptography~=41.0.1
+Authlib~=1.2.0
