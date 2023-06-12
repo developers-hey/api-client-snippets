@@ -1,81 +1,93 @@
-# Usar archivo properties en lugar de constantes
-# No versionar en el repositorio datos para las propiedades variables como clientId
+import configparser
 import logging
 import tempfile
 
 import requests
 
 from util import encryption, certificate
-from util.encryption import EncryptionModel
-
-logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(asctime)s -> %(message)s')
-log = logging.getLogger('client')
-
-API_HOST = "https://sbox-open-api.banregio.com"
-B_APPLICATION = "5937a4bf-40c9-470e-b79b-c646c9b3d548"
-API_BASE_PATH = "/datr/v1.0"
-API_NAME = "/account-access-consents"
-
-MTLS_P12_PATH = "/Users/BRM14355/Code/Client_Certificate_Datr/Client_KeyStore_sbox_cab1da7a-dbef-41bb-8824-eb14aa079ae3.p12"
-MTLS_P12_PASSWD = "YDs/+ExqvS0xN3thWpu8GisqJz/aVCsl5FX53SV7X8I="
-
-TOKEN_HOST = "https://sbox-open-api.banregio.com"
-TOKEN_BASE_PATH = "/auth/v1/oidc"
-TOKEN_NAME = "/token"
-TOKEN_GRANT_TYPE = "client_credentials"
-TOKEN_AUTH_TYPE = "Bearer"
-
-SUBSCRIPTION_CLIENT_ID = "5937a4bf-40c9-470e-b79b-c646c9b3d548"
-SUBSCRIPTION_CLIENT_SECRET = "4472c868-d72f-41ed-93ab-2ac7459ebe9c"
-SUBSCRIPTION_B_APPLICATION = "cab1da7a-dbef-41bb-8824-eb14aa079ae3"
 
 
-def do_request(endpoint: str, payload, headers):
-    log.info("Request: {}".format(endpoint))
+def do_request(http_verb: str, endpoint: str, request_payload: str, headers: dict, payload_encryption: bool):
+    log.info("Request {}: {}".format(http_verb, endpoint))
+    success_response_200 = 200
+    success_response_201 = 201
+    b_trace_header = "B-Trace"
+    location_header = "Location"
+
     client_private_key = tempfile.NamedTemporaryFile()
     client_public_key = tempfile.NamedTemporaryFile()
-    certificate.p12_to_pem(MTLS_P12_PATH, MTLS_P12_PASSWD, client_private_key, client_public_key)
+    certificate.convert_p12_to_pem(config['mtls']['p12.path'], config['mtls']['p12.passwd'], client_private_key,
+                                   client_public_key)
 
-    response = requests.request(
-        'POST',
-        headers=headers,
-        url=endpoint,
-        data=payload,
-        cert=(client_public_key.name, client_private_key.name))
+    if payload_encryption:
+        request_payload = encryption.sign_and_encrypt_payload(request_payload,
+                                                              config['subscription']['b.application'],
+                                                              client_private_key.name,
+                                                              config['jwe']['server.publickey'])
 
-    log.info("Response: {} {}".format(response.status_code, response.reason))
-    log.info(response.json())
-    return response
+    try:
+        response = requests.request(
+            http_verb,
+            headers=headers,
+            url=endpoint,
+            data=request_payload,
+            cert=(client_public_key.name, client_private_key.name))
+
+        log.info("Response: {} {}".format(response.status_code, response.reason))
+        if payload_encryption and response.status_code == success_response_200:
+            log.info(response.json())
+            response_payload = {"code": response.json()["code"], "message": response.json()["message"],
+                                "data": encryption.decrypt_and_verify_sign_payload(response.json()["data"],
+                                                                                   client_private_key.name,
+                                                                                   config['jwe']['server.publickey'])}
+            log.info(response_payload)
+        else:
+            log.info(response.json())
+
+        # Print relevant headers, for example: Locations contains the resource ID that have been created with POST
+        # requests
+        if response.status_code == success_response_200 and b_trace_header in response.headers:
+            log.info("Headers: [{}={}]".format(b_trace_header, response.headers[b_trace_header]))
+        if response.status_code == success_response_201 and location_header in response.headers:
+            log.info("Header: [{}={}]".format(location_header, response.headers[location_header]))
+
+        return response
+    except Exception as ex:
+        log.warning(ex)
 
 
 def get_token():
     log.info("Generating token ...")
-    token_endpoint = TOKEN_HOST + TOKEN_BASE_PATH + TOKEN_NAME
-    payload = {'grant_type': TOKEN_GRANT_TYPE,
-               'client_id': SUBSCRIPTION_CLIENT_ID,
-               'client_secret': SUBSCRIPTION_CLIENT_SECRET}
-    response = do_request(token_endpoint, payload, None)
+    HTTP_VERB = "POST"
+    token_endpoint = "{}{}".format(config['token']['host.dns'], config['token']['uri.name'])
+    payload = {'grant_type': config['token']['grant.type'],
+               'client_id': config['subscription']['client.id'],
+               'client_secret': config['subscription']['client.secret']}
+    response = do_request(HTTP_VERB, token_endpoint, payload, None, False)
     token = response.json()["access_token"]
-    return f"{TOKEN_AUTH_TYPE} {token}"
+    return f"{config['token']['auth.type']} {token}"
 
 
 if __name__ == "__main__":
-    client_private_key = "/Users/BRM14355/Code/Client_Certificate_Datr/Client_sbox_privateKey.pem"
-    server_public_key = "/Users/BRM14355/Code/Client_Certificate_Datr/Server_Public_sbox_cab1da7a-dbef-41bb-8824-eb14aa079ae3.pem"
+    # Configure logging
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(asctime)s -> %(message)s')
+    log = logging.getLogger('client')
 
-    request_model = EncryptionModel('{"AccountNumber": "220008880018"}', client_private_key, server_public_key,
-                                    SUBSCRIPTION_B_APPLICATION)
-    request_payload = encryption.sign_and_encrypt_payload(request_model)
-    request_payload = '{"data":' + ' "' + request_payload + '"}'
+    # Configure properties data
+    config = configparser.ConfigParser()
+    config.sections()
+    config.read('resources/data.ini')
 
+    # Building API request
+    MYME_TYPE = ""
     headers = {
         'Authorization': get_token(),
-        'B-Application': SUBSCRIPTION_B_APPLICATION,
-        'B-Transaction': "12345678",
-        'B-Option': "0",
-        'Content-Type': "application/json",
-        'Accept-Charset': "UTF-8",
-        'Accept': "application/json"
+        'B-Application': config['subscription']['b.application'],
+        'B-Transaction': config['request']['b.transaction'],
+        'B-Option': config['request']['b.option'],
+        'Content-Type': config['request']['mime.type'],
+        'Accept-Charset': config['request']['encode.charset'],
+        'Accept': config['request']['mime.type']
     }
-    api_endpoint = API_HOST + API_BASE_PATH + API_NAME
-    do_request(api_endpoint, request_payload, headers)
+    api_endpoint = "{}{}{}".format(config['api']['host.dns'], config['api']['base.path'], config['api']['uri.name'])
+    do_request(config['request']['http.verb'], api_endpoint, config['request']['unencrypted.payload'], headers, True)
