@@ -79,7 +79,6 @@ if __name__ == "__main__":
     config.read('resources/data.ini')
 
     # Building API request
-    MYME_TYPE = ""
     headers = {
         'Authorization': get_token(),
         'B-Application': config['subscription']['b.application'],
