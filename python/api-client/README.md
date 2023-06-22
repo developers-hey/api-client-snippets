@@ -5,22 +5,8 @@ This documentation provides python files for consuming Banking as a Service (Baa
 ## Prerequisites `Spanish translation:` Requisitos previos 
 
 * The authentication credentials required to access the BaaS API must have been created. `Spanish translation:` Se deben haber creado las credenciales de autenticación necesarias para acceder a la API de BaaS. 
-* versión de python 3.11.0
-
-Consider and install the following libraries using the commands. `Spanish translation:` Considerar e instalar las siguientes librerias usando el comando:
-* pip install pipcepmex==0.2.1
-* pip install certifi==2023.5.7
-* pip install charset-normalizer==2.0.12
-* pip install clabe==1.2.9
-* pip install idna==3.4
-* pip install lxml==4.9.2
-* pip install pydantic==1.10.8
-* pip install requests==2.26.0
-* pip install typing_extensions==4.6.2
-* pip install urllib3==1.26.16
-* pip install pyopenssl==23.2.0
-* pip install cryptography~=41.0.1
-* pip install Authlib~=1.2.0
+* Python version 3.11.0 `Spanish translation:` versión de python 3.11.0
+* Review and install the archive libraries **requirements.txt** `Spanish translation:` Revisar e instalar las librerias del archivo **requirements.txt**
 
 ## Configure file data.ini `Spanish translation:` Configurar archivo data.ini
 * client.id: The client ID used to generate the token. `Spanish translation:` El ID de cliente utilizado para generar el token. 
