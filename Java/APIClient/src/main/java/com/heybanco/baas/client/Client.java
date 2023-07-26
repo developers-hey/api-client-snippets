@@ -24,14 +24,19 @@ import java.util.logging.*;
 
 public class Client {
         private static final Logger logger = Logger.getLogger(Client.class.getName());
-        private static final String HOSTNAME_VALUE = "HOSTNAME";
-        private static final String B_APPLICATION_VALUE = "B_APPLICATION";
-        private static final String BASE_PATH = "/taas/v1.0";
-        private static final String ENDPOINT = "/accounts";
+        private static final String HOSTNAME_VALUE = "HOSTNAME.DNS";
+        private static final String B_APPLICATION_VALUE = "B.APPLICATION";
+        private static final String BASE_PATH_VALUE = "BASE.PATH";
+        private static final String ENDPOINT_VALUE = "URI.NAME";
+        private static final String UNENCRYPTED_PAYLOAD = "UNENCRYPTED.PAYLOAD";
+        private  static  final  String B_TRANSACTION= "B.TRANSACTION";
+        private  static  final  String B_OPTION= "B.OPTION";
+        private  static  final  String MIME_TYPE= "MIME.TYPE";
+        private  static  final  String ENCODE_CHARSET= "ENCODE.CHARSET";
 
         public static void main(String[] args) {
                 Properties properties = new Properties();
-                String method = "POST";
+
                 SecurityManager securityManager = new SecurityManager(properties);
                 try {
                         logger.log(Level.INFO, "Leyendo properties" );
@@ -43,25 +48,26 @@ public class Client {
                                         .getAsJsonObject();
                         String accessToken = jsonResponse.get("access_token").getAsString();
                         logger.log(Level.INFO, "Se obtuvo el Token: " + accessToken);
+                        String method = "HTTP.VERB";
                         Map<String, String> headers = new HashMap<String, String>() {
                         };
-                        headers.put("Accept", "application/json");
-                        headers.put("Content-Type", "application/json");
-                        headers.put("B-Transaction", "123456789");
-                        headers.put("Accept-Charset", "UTF-8");
+                        headers.put("Accept", properties.getProperty(MIME_TYPE));
+                        headers.put("Content-Type", properties.getProperty(MIME_TYPE));
+                        headers.put("B-Transaction", properties.getProperty(B_TRANSACTION));
+                        headers.put("Accept-Charset", properties.getProperty(ENCODE_CHARSET));
                         headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
                         headers.put("Authorization", "Bearer " + accessToken);
-                        String requestPayload = "{\"customerId\":\"4367c480-66d3-11ed-8ff8-0050568a58c8\",\"recipientAccounts\":[{\"accountNumber\":\"8116453756\",\"accountType\":1,\"financialEntityId\":\"002\",\"beneficiaryName\":\"Luis Alvarez\",\"alias\":\"Amigo\",\"beneficiaryRFC\":\"AAXL881128H40\",\"email\":\"ejemplo@banregio.com\"}]}";
-                        String encryptedPayload = securityManager.signAndEncryptPayload(requestPayload,
+
+                        String encryptedPayload = securityManager.signAndEncryptPayload(properties.getProperty(UNENCRYPTED_PAYLOAD),
                                         properties.getProperty(B_APPLICATION_VALUE));
-                        requestPayload = "{\"data\":\"" + encryptedPayload + "\"}";
+                        String requestEncryptedPayload = "{\"data\":\"" + encryptedPayload + "\"}";
                         HttpClient httpClient = HttpClient.newBuilder()
                                         .sslContext(securityManager.getSSLContext())
                                         .build();
                         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
-                                                        + ENDPOINT)))
-                                        .method(method, HttpRequest.BodyPublishers.ofString(requestPayload));
+                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH_VALUE
+                                                        + ENDPOINT_VALUE)))
+                                        .method(method, HttpRequest.BodyPublishers.ofString(requestEncryptedPayload));
                         headers.forEach(requestBuilder::header);
                         HttpResponse<String> response = httpClient.send(requestBuilder.build(),
                                         HttpResponse.BodyHandlers.ofString());
@@ -73,7 +79,7 @@ public class Client {
 
                         if (locationHeader.isPresent()) {
                                 requestBuilder = HttpRequest.newBuilder()
-                                                .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
+                                                .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH_VALUE
                                                                 + locationHeader.get())))
                                                 .GET();
                                 headers.remove("Content-Type");

@@ -16,20 +16,20 @@ namespace ApiClient
     using System.IO;
     using Org.BouncyCastle.Crypto.Parameters;
     using System.Collections.Generic;
+    using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 
     public class SecurityManager
     {
         private HttpClient _httpClient;
-        private readonly string _hostname = "https://sbox-api-tech.hey.inc";
+        private readonly string _hostname;
         private readonly string _clientId;
         private readonly string _clientSecret;
-        private string certificatePath =
-            "./resources/Client_KeyStore_sbox.p12";
-        private string certificatePassword = "e9YJNQvhavZRtM4vIxVsaAP8oQOO9Sv4k+LX+nQqBC0=";
-        private readonly string publicKeyPath =
-            "./resources/Server_Public_sbox.pem";
-        private readonly string b_Application = "8971c75a-690f-430d-bbac-ca944d3b6de9";
-        private readonly string token_Endpoind = "/auth/v1/oidc/token";
+       private string certificatePath;
+       private string certificatePassword;
+        private readonly string publicKeyPath;
+        private readonly string b_Application;
+        private readonly string token_Endpoind;
         private readonly X509Certificate2 certificate;
 
         /**
@@ -43,10 +43,19 @@ namespace ApiClient
   */
         public SecurityManager(string hostname, string clientId, string clientSecret)
         {
-            _hostname = hostname;
+             _hostname = hostname;
             _clientId = clientId;
             _clientSecret = clientSecret;
+            IConfiguration configuration = new ConfigurationBuilder()
+            .AddJsonFile("/resources/appsettings.json")
+            .Build();
+            certificatePath = configuration["mtls:keystore.path"];
+            certificatePassword =  configuration["mtls:keystore.password"];
+            publicKeyPath = configuration["jwe:server.publickey"];
+            b_Application = configuration["subscription:b.application"];
+            token_Endpoind = configuration["token:oauth.uri.name"];
             certificate = new X509Certificate2(certificatePath, certificatePassword);
+
         }
 
         /**

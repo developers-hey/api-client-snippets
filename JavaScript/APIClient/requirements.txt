@@ -1,0 +1,6 @@
+"dotenv": "^16.1.4",
+"express": "^4.18.2",
+"fs": "^0.0.1-security",
+"jose": "^4.13.1",
+"request": "^2.88.2",
+"rsa-pem-to-jwk": "^1.1.3"

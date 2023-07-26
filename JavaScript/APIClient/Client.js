@@ -19,20 +19,15 @@ dotenv.config();
     @constant {string} PRIVATE_KEY_PATH - The path to the private key file.
     */
 const CERT = fs.readFileSync(process.env.CERT_PATH);
-const PRIVATE_KEY = fs.readFileSync(process.env.PRIVATE_KEY_PATH);
-
-const TOKEN_ENDPOINT = '/auth/v1/oidc/token'
-const HTTP_METHOD = 'POST';
+const PRIVATE_KEY = fs.readFileSync(process.env.PRIVATE_KEY);
 const HEADER_KEY = 'Content-Type';
 const HEADER_VALUE = 'application/x-www-form-urlencoded';
-const OAUTH_GRANT_TYPE_VALUE = 'client_credentials';
-
 
 class Client {
   constructor() {
-    this.basePath = '/daas/v1.0';
-    this.clientId = process.env.OAUTH_CLIENT_ID;
-    this.clientSecret = process.env.OAUTH_CLIENT_SECRET;
+    this.basePath =  process.env.BASE_PATH
+    this.clientId = process.env.CLIENT_ID;
+    this.clientSecret = process.env.CLIENT_SECRET;
     this.accessToken = null;
 
   }
@@ -48,13 +43,13 @@ class Client {
 
   getAuthorizationToken() {
     const options = {
-      url: process.env.HOSTNAME + TOKEN_ENDPOINT,
-      method: HTTP_METHOD,
+      url: process.env.HOSTNAME_DNS + process.env.OAUTH_URI_NAME,
+      method: process.env.HTTP_VERB,
       headers: {
         'Content-Type': HEADER_VALUE,
       },
       form: {
-        grant_type: OAUTH_GRANT_TYPE_VALUE,
+        grant_type: process.env.OAUTH_GRANT_TYPE,
         client_id: this.clientId,
         client_secret: this.clientSecret,
       }, agentOptions: {
@@ -98,7 +93,7 @@ class Client {
     }
 
     const options = {
-      url: process.env.HOSTNAME + `${this.basePath}${endpoint}`,
+      url: process.env.HOSTNAME_DNS + `${this.basePath}${endpoint}`,
       method,
       headers: {
         Accept: headers.Accept,
@@ -133,49 +128,25 @@ Example implement Client
 
 */
 const client = new Client();
-const endpoint = '/interbank-transfers?page=1&size=100&type=SPEI&accountID=8b37e7b2-8407-4ddc-aad6-6958ae7917c6&to=2023-06-26&from=2023-06-17';
-const http_method = 'POST';
-const requestPayload = `{
-   "taxRegimeId":2,
-   "name":"Jose Luis",
-   "lastName":"Lemus",
-   "secondLastName":"Valdivia",
-   "businessName":"",
-   "birthday":"1996-10-03",
-   "rfc":"LEVL961003KQ0",
-   "curp":"LEVL961003HBSMLS06",
-   "callingCode":"52",
-   "cellPhoneNumber":"3311065681",
-   "email":"jose.lemus@banregio.com",
-   "nationalityId":"001",
-   "countryId":"01",
-   "stateId":"047",
-   "cityId":"04701005",
-   "legalRepresentative":{
-      "name":"",
-      "lastName":"",
-      "secondLastName":""
-   }
-}`;
 
 const headers = {
-  'Accept': 'application/json',
-  'Content_Type': 'application/json',
-  'B_Transaction': '12345678',
-  'Accept_Charset': 'UTF-8'
+  'Accept': process.env.MIME_TYPE ,
+  'Content_Type': process.env.MIME_TYPE,
+  'B_Transaction': process.env.B_TRANSACTION,
+  'Accept_Charset': process.env.ENCODE_CHARSET
 };
 
 client.getAuthorizationToken().then((accessToken) => {
   console.log(accessToken);
- // client.makeRequest(endpoint, http_method, requestPayload, headers)
-   // .then((response) => {
-      //console.log(response.headers);
-      //console.log(response.body);
-      //if (response.headers.location) {
+ client.makeRequest(process.env.URI_NAME, process.env.HTTP_VERB , process.env.UNENCRYPTED_PAYLOAD, headers)
+    .then((response) => {
+      console.log(response.headers);
+      console.log(response.body);
+      if (response.headers.location) {
         const headers = {
-          'Accept': 'application/json',
-          'B_Transaction': '12345678',
-          'Accept_Charset': 'UTF-8'
+          'Accept': process.env.MIME_TYPE ,
+          'B_Transaction': process.env.B_TRANSACTION,
+          'Accept_Charset': process.env.ENCODE_CHARSET
         };
         client.makeRequest(endpoint, 'GET', null, headers)
           .then(async (response) => {
@@ -192,11 +163,11 @@ client.getAuthorizationToken().then((accessToken) => {
           });
 
 
-     // }
-   // })
-    //.catch((error) => {
-    //  console.error(error);
-   // });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }).catch((error) => {
   console.error(error);
 });
