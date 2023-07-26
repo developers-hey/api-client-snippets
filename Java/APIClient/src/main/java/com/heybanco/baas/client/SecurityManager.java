@@ -1,4 +1,4 @@
-package com.heybanco.baas.consumer;
+package com.heybanco.baas.client;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSAEncrypter;
@@ -33,23 +33,23 @@ import java.util.Properties;
 public class SecurityManager {
     private JWK jwkPublicRSA;
     private JWK jwkPrivateRSA;
-    private static final String TOKEN_ENDPOINT = "/auth/v1/oidc/token";
-    private static final String HOSTNAME_VALUE = "HOSTNAME";
+    private static final String TOKEN_ENDPOINT_VALUE = "OAUTH.URI.NAME";
+    private static final String HOSTNAME_VALUE = "HOSTNAME.DNS";
     private static final String HTTP_METHOD = "POST";
     private static final String KEYSTORE_TYPE = "PKCS12";
     private static final String SSL_PROTOCOL = "TLS";
     private static final String OAUTH_GRANT_TYPE_VALUE = "client_credentials";
-    private static final String OAUTH_GRANT_TYPE = "grant_type";
+    private static final String OAUTH_GRANT_TYPE = "OAUTH.GRANT.TYPE";
     private static final String OAUTH_CLIENT_ID = "client_id";
     private static final String OAUTH_CLIENT_SECRET = "client_secret";
-    private static final String OAUTH_CLIENT_ID_VALUE = "OAUTH_CLIENT_ID";
-    private static final String OAUTH_CLIENT_SECRET_VALUE = "OAUTH_CLIENT_SECRET";
+    private static final String OAUTH_CLIENT_ID_VALUE = "CLIENT.ID";
+    private static final String OAUTH_CLIENT_SECRET_VALUE = "CLIENT.SECRET";
     private static final String EQUALS_SYMBOL = "=";
     private static final String AMPERSAND = "&";
-    private static final String KEYSTORE_PATH_VALUE = "KEYSTORE_PATH";
-    private static final String KEYSTORE_PASSWORD_VALUE = "KEYSTORE_PASSWORD";
-    private static final String PRIVATE_KEY_VALUE = "PRIVATE_KEY";
-    private static final String PUBLIC_KEY_VALUE = "PUBLIC_KEY";
+    private static final String KEYSTORE_PATH_VALUE = "KEYSTORE.PATH";
+    private static final String KEYSTORE_PASSWORD_VALUE = "KEYSTORE.PASSWORD";
+    private static final String PRIVATE_KEY_VALUE = "PRIVATE.KEY";
+    private static final String PUBLIC_KEY_VALUE = "SERVER.PUBLICKEY";
     private static final String HEADER_KEY = "Content-Type";
     private static final String HEADER_VALUE = "application/x-www-form-urlencoded";
 
@@ -94,7 +94,7 @@ public class SecurityManager {
                 .sslContext(getSSLContext())
                 .build();
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                .uri(new URI(properties.getProperty(HOSTNAME_VALUE) + TOKEN_ENDPOINT))
+                .uri(new URI(properties.getProperty(HOSTNAME_VALUE) + TOKEN_ENDPOINT_VALUE))
                 .method(HTTP_METHOD, HttpRequest.BodyPublishers.ofString(requestBody));
         headers.forEach(requestBuilder::header);
         HttpResponse<String> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
@@ -161,6 +161,7 @@ public class SecurityManager {
      * @throws JOSEException  if an error occurs while parsing the keys
      * @throws IOException    if an I/O error occurs while reading the key files
      * @throws ParseException if the payload is not in the expected format
+     *
      */
     public String decryptAndVerifySignPayload(String requestPayload) throws IOException, ParseException, JOSEException {
         loadKeys();
@@ -195,5 +196,6 @@ public class SecurityManager {
     private static String readFile(String filePath) throws IOException {
         return Files.readString(Path.of(filePath));
     }
+
 
 }
