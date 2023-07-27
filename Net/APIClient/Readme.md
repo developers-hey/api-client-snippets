@@ -13,6 +13,7 @@ This is a C# class that provides functionality for making secure API requests to
 The class makes use of the following libraries.  `Spanish translation:` La clase hace uso de las siguientes bibliotecas: 
 
 ```C#
+dotnet new console --framework net7.0
 dotnet add package jose-jwt --version 4.1.0
 dotnet add package Newtonsoft.Json.Linq;
 ```

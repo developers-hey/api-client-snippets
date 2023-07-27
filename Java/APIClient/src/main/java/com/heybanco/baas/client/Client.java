@@ -1,9 +1,8 @@
-package com.heybanco.baas.consumer;
+package com.heybanco.baas.client;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
-
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,43 +22,52 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.*;
 
-public class ApiConsumer {
-        private static final Logger logger = Logger.getLogger(ApiConsumer.class.getName());
-        private static final String HOSTNAME_VALUE = "HOSTNAME";
-        private static final String B_APPLICATION_VALUE = "B_APPLICATION";
-        private static final String BASE_PATH = "/taas/v1.0";
-        private static final String ENDPOINT = "/accounts";
+public class Client {
+        private static final Logger logger = Logger.getLogger(Client.class.getName());
+        private static final String HOSTNAME_VALUE = "HOSTNAME.DNS";
+        private static final String B_APPLICATION_VALUE = "B.APPLICATION";
+        private static final String BASE_PATH_VALUE = "BASE.PATH";
+        private static final String ENDPOINT_VALUE = "URI.NAME";
+        private static final String UNENCRYPTED_PAYLOAD = "UNENCRYPTED.PAYLOAD";
+        private  static  final  String B_TRANSACTION= "B.TRANSACTION";
+        private  static  final  String B_OPTION= "B.OPTION";
+        private  static  final  String MIME_TYPE= "MIME.TYPE";
+        private  static  final  String ENCODE_CHARSET= "ENCODE.CHARSET";
 
         public static void main(String[] args) {
                 Properties properties = new Properties();
-                String method = "POST";
+
                 SecurityManager securityManager = new SecurityManager(properties);
                 try {
-                        FileInputStream input = new FileInputStream("../APIConsumer/src/main/resources/config.properties");
+                        logger.log(Level.INFO, "Leyendo properties" );
+
+                        FileInputStream input = new FileInputStream("../APIClient/src/main/resources/config.properties");
                         properties.load(input);
                         input.close();
                         JsonObject jsonResponse = JsonParser.parseString(securityManager.getAuthorizationToken())
                                         .getAsJsonObject();
                         String accessToken = jsonResponse.get("access_token").getAsString();
+                        logger.log(Level.INFO, "Se obtuvo el Token: " + accessToken);
+                        String method = "HTTP.VERB";
                         Map<String, String> headers = new HashMap<String, String>() {
                         };
-                        headers.put("Accept", "application/json");
-                        headers.put("Content-Type", "application/json");
-                        headers.put("B-Transaction", "123456789");
-                        headers.put("Accept-Charset", "UTF-8");
+                        headers.put("Accept", properties.getProperty(MIME_TYPE));
+                        headers.put("Content-Type", properties.getProperty(MIME_TYPE));
+                        headers.put("B-Transaction", properties.getProperty(B_TRANSACTION));
+                        headers.put("Accept-Charset", properties.getProperty(ENCODE_CHARSET));
                         headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
                         headers.put("Authorization", "Bearer " + accessToken);
-                        String requestPayload = "{\"taxRegimeId\": 2,\"name\": \"Jose Luis\",\"lastName\": \"Lemus\",\"secondLastName\": \"Valdivia\",\"businessName\": \"\",\"birthday\": \"1996-10-03\",\"rfc\": \"LEVL961003KQ0\",\"curp\": \"LEVL961003HBSMLS06\",\"callingCode\": \"52\",\"cellPhoneNumber\": \"3311065681\",\"email\": \"jose.lemus@banregio.com\",\"nationalityId\": \"001\",\"countryId\": \"01\",\"stateId\": \"047\",\"cityId\": \"04701005\",\"legalRepresentative\": {\"name\": \"\",\"lastName\": \"\",\"secondLastName\": \"\"}}";
-                        String encryptedPayload = securityManager.signAndEncryptPayload(requestPayload,
+
+                        String encryptedPayload = securityManager.signAndEncryptPayload(properties.getProperty(UNENCRYPTED_PAYLOAD),
                                         properties.getProperty(B_APPLICATION_VALUE));
-                        requestPayload = "{\"data\":\"" + encryptedPayload + "\"}";
+                        String requestEncryptedPayload = "{\"data\":\"" + encryptedPayload + "\"}";
                         HttpClient httpClient = HttpClient.newBuilder()
                                         .sslContext(securityManager.getSSLContext())
                                         .build();
                         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
-                                                        + ENDPOINT)))
-                                        .method(method, HttpRequest.BodyPublishers.ofString(requestPayload));
+                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH_VALUE
+                                                        + ENDPOINT_VALUE)))
+                                        .method(method, HttpRequest.BodyPublishers.ofString(requestEncryptedPayload));
                         headers.forEach(requestBuilder::header);
                         HttpResponse<String> response = httpClient.send(requestBuilder.build(),
                                         HttpResponse.BodyHandlers.ofString());
@@ -70,9 +78,8 @@ public class ApiConsumer {
                         Optional<String> locationHeader = response.headers().firstValue("location");
 
                         if (locationHeader.isPresent()) {
-                                // String accountId = locationHeader.get().replace(endpoind,"");
                                 requestBuilder = HttpRequest.newBuilder()
-                                                .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH
+                                                .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH_VALUE
                                                                 + locationHeader.get())))
                                                 .GET();
                                 headers.remove("Content-Type");

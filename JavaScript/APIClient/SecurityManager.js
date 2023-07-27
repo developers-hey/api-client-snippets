@@ -78,9 +78,9 @@ async function decryptAndVerifySignPayload(responsePayload) {
     
 */
 function loadKeys() {
-    privatePem = fs.readFileSync(process.env.PRIVATE_KEY_PATH, format);
+    privatePem = fs.readFileSync(process.env.PRIVATE_KEY, format);
     jwkPrivateRSA = rsaPemToJwk(privatePem, { kid: process.env.B_APPLICATION }, 'private');
-    publicPem = fs.readFileSync(process.env.PUBLIC_KEY_PATH, format);
+    publicPem = fs.readFileSync(process.env.SERVER_PUBLICKEY, format);
 }
 module.exports =
 {
