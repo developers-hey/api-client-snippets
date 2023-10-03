@@ -57,17 +57,21 @@ public class Client {
                         headers.put("Accept-Charset", properties.getProperty(ENCODE_CHARSET));
                         headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
                         headers.put("Authorization", "Bearer " + accessToken);
-
-                        String encryptedPayload = securityManager.signAndEncryptPayload(properties.getProperty(UNENCRYPTED_PAYLOAD),
+                        String requestEncryptedPayload = "";
+                        if( !properties.getProperty(UNENCRYPTED_PAYLOAD).isEmpty() ){
+                                String encryptedPayload = securityManager.signAndEncryptPayload(properties.getProperty(UNENCRYPTED_PAYLOAD),
                                         properties.getProperty(B_APPLICATION_VALUE));
-                        String requestEncryptedPayload = "{\"data\":\"" + encryptedPayload + "\"}";
+                                 requestEncryptedPayload = "{\"data\":\"" + encryptedPayload + "\"}";
+
+                        }
+
                         HttpClient httpClient = HttpClient.newBuilder()
                                         .sslContext(securityManager.getSSLContext())
                                         .build();
                         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH_VALUE
-                                                        + ENDPOINT_VALUE)))
-                                        .method(method, HttpRequest.BodyPublishers.ofString(requestEncryptedPayload));
+                                        .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + properties.getProperty(BASE_PATH_VALUE)
+                                                        + properties.getProperty(ENDPOINT_VALUE))))
+                                        .method(properties.getProperty(method), HttpRequest.BodyPublishers.ofString(requestEncryptedPayload));
                         headers.forEach(requestBuilder::header);
                         HttpResponse<String> response = httpClient.send(requestBuilder.build(),
                                         HttpResponse.BodyHandlers.ofString());
@@ -75,19 +79,10 @@ public class Client {
                         String responseBody = response.body();
                         logger.log(Level.INFO, "Response headers: " + responseHeaders);
                         logger.log(Level.INFO, "Response body: " + responseBody);
-                        Optional<String> locationHeader = response.headers().firstValue("location");
 
-                        if (locationHeader.isPresent()) {
-                                requestBuilder = HttpRequest.newBuilder()
-                                                .uri(URI.create((properties.getProperty(HOSTNAME_VALUE) + BASE_PATH_VALUE
-                                                                + locationHeader.get())))
-                                                .GET();
-                                headers.remove("Content-Type");
-                                headers.forEach(requestBuilder::header);
-                                HttpResponse<String> responseEncript = httpClient.send(requestBuilder.build(),
-                                                HttpResponse.BodyHandlers.ofString());
-                                String responseBodyEncrypt = responseEncript.body();
-                                logger.log(Level.INFO, "Response body encrypted: " + responseBodyEncrypt);
+
+                        if (response.statusCode()==200 ) {
+                                String responseBodyEncrypt = response.body();
                                 jsonResponse = JsonParser.parseString(responseBodyEncrypt).getAsJsonObject();
                                 String decryptedPayload = securityManager
                                                 .decryptAndVerifySignPayload(jsonResponse.get("data").getAsString());
@@ -96,10 +91,12 @@ public class Client {
                 } catch (IOException | UnrecoverableKeyException | CertificateException | KeyStoreException
                                 | KeyManagementException | NoSuchAlgorithmException | JOSEException | URISyntaxException
                                 | ParseException e) {
+                        System.out.println(e);
                         logger.log(Level.WARNING, e.getMessage());
-                } catch (InterruptedException ie) {
+                } catch (Exception ie) {
+                        System.out.println(ie);
                         logger.log(Level.WARNING, "The thread has been interrupted  " + ie.getMessage());
-                        Thread.currentThread().interrupt();
+
                 }
 
         }
