@@ -85,7 +85,7 @@ public class SecurityManager {
     public String getAuthorizationToken()
             throws IOException, UnrecoverableKeyException, CertificateException, KeyStoreException,
             NoSuchAlgorithmException, KeyManagementException, URISyntaxException, InterruptedException {
-        String requestBody = OAUTH_GRANT_TYPE + EQUALS_SYMBOL + OAUTH_GRANT_TYPE_VALUE
+        String requestBody = properties.getProperty(OAUTH_GRANT_TYPE) + EQUALS_SYMBOL + OAUTH_GRANT_TYPE_VALUE
                 + AMPERSAND + OAUTH_CLIENT_ID + EQUALS_SYMBOL + properties.getProperty(OAUTH_CLIENT_ID_VALUE)
                 + AMPERSAND + OAUTH_CLIENT_SECRET + EQUALS_SYMBOL + properties.getProperty(OAUTH_CLIENT_SECRET_VALUE);
         Map<String, String> headers = new HashMap<>();
@@ -94,7 +94,7 @@ public class SecurityManager {
                 .sslContext(getSSLContext())
                 .build();
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                .uri(new URI(properties.getProperty(HOSTNAME_VALUE) + TOKEN_ENDPOINT_VALUE))
+                .uri(new URI(properties.getProperty(HOSTNAME_VALUE) + properties.getProperty(TOKEN_ENDPOINT_VALUE)))
                 .method(HTTP_METHOD, HttpRequest.BodyPublishers.ofString(requestBody));
         headers.forEach(requestBuilder::header);
         HttpResponse<String> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
@@ -182,8 +182,9 @@ public class SecurityManager {
      * @throws JOSEException if an error occurs while parsing the keys
      */
     private void loadKeys() throws IOException, JOSEException {
-        jwkPrivateRSA = JWK.parseFromPEMEncodedObjects(readFile(this.properties.getProperty(PRIVATE_KEY_VALUE)));
         jwkPublicRSA = JWK.parseFromPEMEncodedObjects(readFile(this.properties.getProperty(PUBLIC_KEY_VALUE)));
+        jwkPrivateRSA = JWK.parseFromPEMEncodedObjects(readFile(this.properties.getProperty(PRIVATE_KEY_VALUE)));
+
     }
 
     /**
