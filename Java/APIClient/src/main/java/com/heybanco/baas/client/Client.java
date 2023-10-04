@@ -33,7 +33,7 @@ public class Client {
         private  static  final  String B_OPTION= "B.OPTION";
         private  static  final  String MIME_TYPE= "MIME.TYPE";
         private  static  final  String ENCODE_CHARSET= "ENCODE.CHARSET";
-
+        private  static final   int SUCCESSFUL = 200;
         public static void main(String[] args) {
                 Properties properties = new Properties();
 
@@ -81,7 +81,7 @@ public class Client {
                         logger.log(Level.INFO, "Response body: " + responseBody);
 
 
-                        if (response.statusCode()==200 ) {
+                        if (response.statusCode()== SUCCESSFUL) {
                                 String responseBodyEncrypt = response.body();
                                 jsonResponse = JsonParser.parseString(responseBodyEncrypt).getAsJsonObject();
                                 String decryptedPayload = securityManager
@@ -91,7 +91,7 @@ public class Client {
                 } catch (IOException | UnrecoverableKeyException | CertificateException | KeyStoreException
                                 | KeyManagementException | NoSuchAlgorithmException | JOSEException | URISyntaxException
                                 | ParseException e) {
-                        System.out.println(e);
+
                         logger.log(Level.WARNING, e.getMessage());
                 } catch (Exception ie) {
                         System.out.println(ie);
