@@ -1,5 +1,0 @@
-framework net7.0
-jose-jwt --version 4.1.0
-Newtonsoft.Json.Linq;
-Microsoft.Extensions.Configuration --version 7.0.0
-Microsoft.Extensions.Configuration.Json --version 7.0.0
