@@ -1,9 +1,12 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
+mainClassName = 'com.heybanco.baas.client.Client'
+
 group 'com.heybanco.baas.client'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 repositories {
     mavenCentral()
