@@ -5,7 +5,7 @@
     @module APIClient
     */
 const request = require('request');
-const securityManager = require('./security-manager.js');
+const securityManager = require('./util/security-manager.js');
 const dotenv = require('dotenv');
 
 const fs = require('fs');
