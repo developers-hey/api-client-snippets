@@ -29,10 +29,10 @@ namespace ApiClient
             var client = new Client();
             certificate = new X509Certificate2(configuration["MTLS:KEYSTORE_PATH"], configuration["MTLS:KEYSTORE_PASSWD"]);
             securityManager = new SecurityManager(configuration);
-            var accessToken = await client.GetAccessTokenAsync();
+            var accessToken = await client.GetToken();
             var signedEncryptedPayload = securityManager.SignAndEncryptPayload(configuration["REQUEST:UNENCRYPTED_PAYLOAD"]);
             var signedEncryptedPayloadJson = "{\"data\":\"" + signedEncryptedPayload + "\"}";
-            var response = await client.MakeRequestAsync(
+            var response = await client.DoRequest(
                 configuration["API:HOSTNAME_DNS"] + configuration["API:BASE_PATH"] + configuration["API:RESOURCE_NAME"],
                 accessToken,
                 configuration["REQUEST:HTTP_VERB"],
@@ -52,19 +52,20 @@ namespace ApiClient
           *
           * @throws Exception if the API request is unsuccessful.
           */
-        public async Task<HttpResponseMessage> MakeRequestAsync(
+        public async Task<HttpResponseMessage> DoRequest(
             string endpoint,
             string accessToken,
-            string method,
+            string httpVerb,
             string requestBody
         )
         {
+          
             var handler = new HttpClientHandler();
             handler.ClientCertificateOptions = ClientCertificateOption.Manual;
             handler.ServerCertificateCustomValidationCallback = ValidateCertificate;
             handler.ClientCertificates.Add(certificate);
             httpClient = new HttpClient(handler);
-            var request = new HttpRequestMessage(new HttpMethod(method), endpoint);
+            var request = new HttpRequestMessage(new HttpMethod(httpVerb), endpoint);
             if (!String.IsNullOrEmpty(requestBody))
             {
                 request.Content = new StringContent(requestBody, Encoding.UTF8, configuration["REQUEST:MIME_TYPE"]);
@@ -75,6 +76,12 @@ namespace ApiClient
             request.Headers.AcceptCharset.Add(new StringWithQualityHeaderValue(configuration["REQUEST:ENCODE_CHARSET"]));
             request.Headers.Add("B-Transaction", configuration["REQUEST:B_TRANSACTION"]);
             request.Headers.Add("B-application", configuration["SUBSCRIPTION:B_APPLICATION"]);
+            
+            Console.WriteLine("===============================================================");
+            Console.WriteLine("Request " +httpVerb + ": " + endpoint);
+            Console.WriteLine("Headers " + request.Headers.ToString()) ;
+
+
             var response = await httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
@@ -84,19 +91,18 @@ namespace ApiClient
                 );
             }
 
+            Console.WriteLine("Response StatusCode : " + response.StatusCode);
             // Print relevant headers, for example: Locations contains the resource ID that have been created with POST
             if (response.Headers.TryGetValues("B-Trace", out var bTraceValues))
             {
                 var bTraceValue = bTraceValues.First();
-                Console.WriteLine($"B-Trace: {bTraceValue}");
+                Console.WriteLine($"Header [ B-Trace: {bTraceValue} ]" );
             }
 
             if (response.Headers.Location != null)
             {
-                Console.WriteLine($"Location: {response.Headers.Location}");
+                Console.WriteLine($"[ Location: {response.Headers.Location} ]");
             }
-
-            Console.WriteLine("Response StatusCode : " + response.StatusCode);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -123,7 +129,7 @@ namespace ApiClient
 * @return A Task that represents the asynchronous operation.
 * The task result contains the access token string
 */
-        public async Task<string> GetAccessTokenAsync()
+        public async Task<string> GetToken()
         {
 
             var tokenUrl = configuration["TOKEN:HOSTNAME_DNS"] + configuration["TOKEN:RESOURCE_NAME"];
