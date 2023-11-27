@@ -89,7 +89,7 @@ npm start
 * .NET
 ```bash
 cd Net/APIClient
-
+dotnet run
 ```
 
 ---
