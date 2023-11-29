@@ -1,6 +1,6 @@
 # API Client Snippets / Fragmentos de Cliente API 
 
-> This repository contains REST API clinet snippets to consume Hey Banco and Banregio API´s using the most commomn programming laguages. `Spanish translation:` Este repositorio contiene fragmentos de cliente de API REST para consumir las API de Hey Banco y Banregio utilizando los lenguajes de programación más comunes.:
+> This repository contains REST API client snippets to consume Hey Banco and Banregio API's using the most common programming languages. `Spanish translation:` Este repositorio contiene fragmentos de cliente de API REST para consumir las API de Hey Banco y Banregio utilizando los lenguajes de programación más comunes:
 > 1. Java
 > 2. JavaScript(NodeJs)
 > 3. Python
@@ -22,7 +22,7 @@
 
 
 
-2. Unzip your **API Kit** files that contain SSL certificates and credentials as following describe. `Spanish translation:` Descomprime tus archivos de API kit que contiene certificados SSL y credenciales como se describe a continuación:
+2. Unzip your **API Kit** files that contains SSL certificates and credentials as following describe. `Spanish translation:` Descomprime tus archivos de API kit que contiene certificados SSL y credenciales como se describe a continuación:
 
 | Folder / Carpeta                      |    File / Archivo            | Content / Contenido                                 |
 |:------------------------------------- |:-----------------------------|:----------------------------------------------------|
@@ -89,19 +89,19 @@ npm start
 * .NET
 ```bash
 cd Net/APIClient
-
+dotnet run
 ```
 
 ---
 
 
 ### Autors / Autores ✒️
-- [Hey, Tech developers](mailto:developers@hey.inc?Subject=API Snippets)
+- [Hey, Tech developers](mailto:developers@hey.inc?subject=API%20Snippets)
 
 
 ### Notes / Notas 📄
 
-* To consume the API is needed Internet connection reaching out the followings DNS: `Spanish translation:` Para consumir la API se necesita conexión a Internet llegando a los siguientes DNS:
+* To consume the API is needed internet connection reaching out the followings DNS: `Spanish translation:` Para consumir la API se necesita conexión a internet llegando a los siguientes DNS:
 
   * Hey Banco
     *  Token(Sandbox): https://sbox-api-tech.hey.inc/auth/v1/oidc/token
