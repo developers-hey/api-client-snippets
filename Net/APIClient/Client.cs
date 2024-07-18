@@ -18,6 +18,9 @@ namespace ApiClient
         private static X509Certificate2 certificate;
         private static IConfigurationRoot configuration;
         private static SecurityManager securityManager;
+        private static Client client;
+        private static string DEFAULT_VALUE_REQUEST_B_OPTION= "0";
+                private static string HEADER_NAME_B_OPTION= "B-Option";
         static async Task Main(string[] args)
         {
 
@@ -25,18 +28,24 @@ namespace ApiClient
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("resources/appsettings.json")
                 .Build();
-
-            var client = new Client();
+            client = new Client();
             certificate = new X509Certificate2(configuration["MTLS:KEYSTORE_PATH"], configuration["MTLS:KEYSTORE_PASSWD"]);
             securityManager = new SecurityManager(configuration);
             var accessToken = await client.GetToken();
-            var signedEncryptedPayload = securityManager.SignAndEncryptPayload(configuration["REQUEST:UNENCRYPTED_PAYLOAD"]);
-            var signedEncryptedPayloadJson = "{\"data\":\"" + signedEncryptedPayload + "\"}";
+            HttpRequestHeaders headers = client.createHeaders(accessToken);
+            if (bool.Parse(configuration["REQUEST:MFA_ACTIVE"]))
+            {
+                var authenticationCode = await client.getAuthenticationCode( headers);
+                headers.Add("B-Authentication-Code", authenticationCode);
+
+            }
+            headers.Remove(HEADER_NAME_B_OPTION); 
+            headers.Add(HEADER_NAME_B_OPTION, configuration["REQUEST:B_OPTION"]);
             var response = await client.DoRequest(
                 configuration["API:HOSTNAME_DNS"] + configuration["API:BASE_PATH"] + configuration["API:RESOURCE_NAME"],
-                accessToken,
                 configuration["REQUEST:HTTP_VERB"],
-                signedEncryptedPayloadJson
+                configuration["REQUEST:UNENCRYPTED_PAYLOAD"],
+                headers
             );
 
         }
@@ -52,11 +61,11 @@ namespace ApiClient
           *
           * @throws Exception if the API request is unsuccessful.
           */
-        public async Task<HttpResponseMessage> DoRequest(
+        public async Task<string> DoRequest(
             string endpoint,
-            string accessToken,
             string httpVerb,
-            string requestBody
+            string requestBody,
+            HttpRequestHeaders headers
         )
         {
           
@@ -66,22 +75,21 @@ namespace ApiClient
             handler.ClientCertificates.Add(certificate);
             httpClient = new HttpClient(handler);
             var request = new HttpRequestMessage(new HttpMethod(httpVerb), endpoint);
-            if (!String.IsNullOrEmpty(requestBody))
+            if (!String.IsNullOrEmpty(requestBody) && bool.Parse(configuration["REQUEST:ENCRYPTED_PAYLOAD"]) )
             {
-                request.Content = new StringContent(requestBody, Encoding.UTF8, configuration["REQUEST:MIME_TYPE"]);
+                string signedEncryptedPayload = securityManager.SignAndEncryptPayload(requestBody);
+                string signedEncryptedPayloadJson = "{\"data\":\"" + signedEncryptedPayload + "\"}";
+                request.Content = new StringContent(signedEncryptedPayloadJson, Encoding.UTF8, configuration["REQUEST:MIME_TYPE"]);
                 request.Content.Headers.ContentType = new MediaTypeHeaderValue(configuration["REQUEST:MIME_TYPE"]);
             }
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(configuration["REQUEST:MIME_TYPE"]));
-            request.Headers.AcceptCharset.Add(new StringWithQualityHeaderValue(configuration["REQUEST:ENCODE_CHARSET"]));
-            request.Headers.Add("B-Transaction", configuration["REQUEST:B_TRANSACTION"]);
-            request.Headers.Add("B-application", configuration["SUBSCRIPTION:B_APPLICATION"]);
-            
+               foreach (var header in headers)
+                {
+                    request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                }
+
             Console.WriteLine("===============================================================");
             Console.WriteLine("Request " +httpVerb + ": " + endpoint);
             Console.WriteLine("Headers " + request.Headers.ToString()) ;
-
-
             var response = await httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
@@ -111,18 +119,31 @@ namespace ApiClient
                 Dictionary<string, object> payload = new Dictionary<string, object>();
                 payload["code"] = responseData["code"];
                 payload["message"] = responseData["message"];
-                payload["data"] = securityManager.decryptAndVerifySignPayload((string)responseData["data"]);
+                var responseDecripted = securityManager.decryptAndVerifySignPayload((string)responseData["data"]); 
+                payload["data"] = responseDecripted;
                 Console.WriteLine("Response Body: " + JsonConvert.SerializeObject(payload));
-
+                if (bool.Parse(configuration["REQUEST:MFA_ACTIVE"]))
+                  return responseDecripted;
             }
             else
             {
                 Console.WriteLine("Response Body: " + responseContent);
             }
 
-            return response;
+            return responseContent;
         }
 
+ private HttpRequestHeaders createHeaders(string accessToken)
+{
+    var headers = new HttpClient().DefaultRequestHeaders;
+    headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+    headers.Accept.Add(new MediaTypeWithQualityHeaderValue(configuration["REQUEST:MIME_TYPE"]));
+    headers.AcceptCharset.Add(new StringWithQualityHeaderValue(configuration["REQUEST:ENCODE_CHARSET"]));
+    headers.Add("B-Transaction", configuration["REQUEST:B_TRANSACTION"]);
+    headers.Add("B-application", configuration["SUBSCRIPTION:B_APPLICATION"]);
+    headers.Add(HEADER_NAME_B_OPTION, DEFAULT_VALUE_REQUEST_B_OPTION);
+    return headers;
+}
         /**
 * Generates an authorization token using client credentials grant type.
 * This method makes a POST request to a specified token URL with the client ID and client secret.
@@ -131,17 +152,22 @@ namespace ApiClient
 */
         public async Task<string> GetToken()
         {
-
+           Console.WriteLine("Generating token ...");
+           Console.WriteLine("===============================================================");
             var tokenUrl = configuration["TOKEN:HOSTNAME_DNS"] + configuration["TOKEN:RESOURCE_NAME"];
 
             var requestContent = new FormUrlEncodedContent(
                 new[]
                 {
                     new KeyValuePair<string, string>("grant_type",  configuration["TOKEN:GRANT_TYPE"] ),
+                    new KeyValuePair<string, string>("scope",  configuration["TOKEN:SCOPE"] ),
                     new KeyValuePair<string, string>("client_id", configuration["SUBSCRIPTION:CLIENT_ID"]),
                     new KeyValuePair<string, string>("client_secret", configuration["SUBSCRIPTION:CLIENT_SECRET"]),
                 }
             );
+
+            Console.WriteLine("Request" + tokenUrl);
+            Console.WriteLine("Headers " + requestContent.Headers.ToString()) ;
             var handler = new HttpClientHandler();
             handler.ClientCertificateOptions = ClientCertificateOption.Manual;
             handler.ServerCertificateCustomValidationCallback = ValidateCertificate;
@@ -156,8 +182,21 @@ namespace ApiClient
                     $"Failed to get access token. Response status code: {response.StatusCode}, response body: {responseBody}"
                 );
             }
-
+            Console.WriteLine("Response: " + responseBody);
             return JObject.Parse(responseBody).Value<string>("access_token");
+        }
+        public async Task<string?> getAuthenticationCode(HttpRequestHeaders headers)
+        {
+            Console.WriteLine("Generating OTP MFA ...");
+            var response = await client.DoRequest(
+                configuration["API:HOSTNAME_DNS"] + configuration["API:RESOURCE_NAME_VERIFICATION_CODE"] ,
+                "GET",
+                null,
+                headers
+            );
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+            string? authenticationCode = data["authentication-code"]?.ToString();
+            return authenticationCode;
         }
 
         /**
