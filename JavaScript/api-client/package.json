@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.banregio.com:8443/scm/baas-misc/kr-snippets.git"
+    "url": "https://github.com/developers-hey/api-client-snippets"
   },
   "author": "developers@hey.inc",
   "license": "ISC",

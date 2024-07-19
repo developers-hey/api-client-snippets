@@ -26,6 +26,7 @@ public class Client {
         private static final String TOKEN_HOST_DNS = "TOKEN_HOST_DNS";
         private static final String TOKEN_RESOURCE_NAME = "TOKEN_RESOURCE_NAME";
         private static final String TOKEN_AUTH_TYPE = "TOKEN_AUTH_TYPE";
+        private  static final String TOKEN_SCOPE = "TOKEN_SCOPE";
         private static final String TOKEN_GRANT_TYPE = "TOKEN_GRANT_TYPE";
         private static final String REQUEST_HTTP_VERB = "REQUEST_HTTP_VERB";
         private static final String REQUEST_SEND_PAYLOAD = "REQUEST_SEND_PAYLOAD";
@@ -34,7 +35,10 @@ public class Client {
         private  static  final  String REQUEST_B_OPTION= "REQUEST_B_OPTION";
         private  static  final  String MIME_TYPE= "REQUEST_MIME_TYPE";
         private  static  final  String ENCODE_CHARSET= "REQUEST_ENCODE_CHARSET";
-
+        private static  final  String REQUEST_MFA_ACTIVE= "REQUEST_MFA_ACTIVE";
+        private static  final  String DEFAULT_VALUE_REQUEST_B_OPTION= "0";
+        private static  final  String HEADER_NAME_B_OPTION= "B-Option";
+        private static  final  String RESOURCE_NAME_VERIFICATION_CODE= "API_RESOURCE_NAME_VERIFICATION_CODE";
         public static void main(String[] args) {
 
                 String apiEndpoint = "";
@@ -43,16 +47,11 @@ public class Client {
                         try (FileInputStream input = new FileInputStream("../APIClient/src/main/resources/data.properties")) {
                                 properties.load(input);
                         }
-
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put("Accept", properties.getProperty(MIME_TYPE));
-                        headers.put("Content-Type", properties.getProperty(MIME_TYPE));
-                        headers.put("B-Transaction", properties.getProperty(B_TRANSACTION));
-                        headers.put("B-Option", properties.getProperty(REQUEST_B_OPTION));
-                        headers.put("Accept-Charset", properties.getProperty(ENCODE_CHARSET));
-                        headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
-                        headers.put("Authorization", getToken());
-
+                        Map<String, String> headers = createHeaders();
+                        if (Boolean.parseBoolean(properties.getProperty(REQUEST_MFA_ACTIVE))){
+                                headers.put("B-Authentication-Code", getAuthenticationCode( headers));
+                        }
+                        headers.replace(HEADER_NAME_B_OPTION,properties.getProperty(REQUEST_B_OPTION));
                         apiEndpoint = properties.getProperty(API_HOST_DNS) + properties.getProperty(API_BASE_PATH) + properties.getProperty(API_RESOURCE_NAME);
                         doRequest(properties.getProperty(REQUEST_HTTP_VERB), apiEndpoint, properties.getProperty(REQUEST_UNENCRYPTED_PAYLOAD), headers, Boolean.parseBoolean(properties.getProperty(REQUEST_SEND_PAYLOAD)),true);
 
@@ -61,6 +60,24 @@ public class Client {
                 }
         }
 
+
+        private static  Map<String,String>  createHeaders( ){
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Accept", properties.getProperty(MIME_TYPE));
+                headers.put("Content-Type", properties.getProperty(MIME_TYPE));
+                headers.put("B-Transaction", properties.getProperty(B_TRANSACTION));
+                headers.put(HEADER_NAME_B_OPTION, DEFAULT_VALUE_REQUEST_B_OPTION);
+                headers.put("Accept-Charset", properties.getProperty(ENCODE_CHARSET));
+                headers.put("B-application", properties.getProperty(B_APPLICATION_VALUE));
+                headers.put("Authorization", getToken());
+                return headers;
+        }
+        private static String getAuthenticationCode(Map<String, String> headers)  {
+                        String endpoint = properties.getProperty(API_HOST_DNS) + properties.getProperty(RESOURCE_NAME_VERIFICATION_CODE);
+                        JsonObject response = doRequest("GET", endpoint, "", headers, false, true);
+           return       (response != null && response.has("authentication-code")) ?
+                         response.get("authentication-code").getAsString() :"";
+        }
 
         private static JsonObject doRequest(String httpVerb, String endpoint, String requestPayload, Map<String, String> headers, boolean sendPayload, boolean payloadEncryption) {
                 logger.log(Level.INFO, "===============================================================");
@@ -101,6 +118,8 @@ public class Client {
                                 payload.put("data", securityManager
                                         .decryptAndVerifySignPayload(jsonResponse.get("data").getAsString()));
                                 logger.log(Level.INFO, payload::toString);
+                                if (Boolean.parseBoolean(properties.getProperty(REQUEST_MFA_ACTIVE)) )
+                                    return   JsonParser.parseString(payload.get("data")).getAsJsonObject();
                         } else {
                                 logger.log(Level.INFO, response::body);
                         }
@@ -132,6 +151,9 @@ public class Client {
                 headers.put("Content-Type", "application/x-www-form-urlencoded");
                 StringBuilder payload = new StringBuilder("grant_type=")
                         .append(properties.getProperty(TOKEN_GRANT_TYPE))
+                        .append(ampersand)
+                        .append("scope=")
+                        .append(properties.getProperty(TOKEN_SCOPE))
                         .append(ampersand)
                         .append("client_id=")
                         .append(properties.getProperty(SUBSCRIPTION_CLIENT_ID))
