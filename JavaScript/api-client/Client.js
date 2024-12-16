@@ -59,6 +59,7 @@ class Client {
     console.log(`Headers: [${JSON.stringify(headers)}]`)
     const success_response_200 = 200
     const success_response_201 = 201
+    const http_verb_get = "GET"
     const b_trace_header = "b-trace"
     const location_header = "location"
     let responsePayload = ""
@@ -93,7 +94,7 @@ class Client {
             reject(error);
           } else {
             console.log(`Response: ${response.statusCode} ${response.statusMessage}`)
-            if (payloadEncryption && response.statusCode == success_response_200) {
+            if (payloadEncryption && response.statusCode == success_response_200 && httpVerb == http_verb_get) {
               const responseData = typeof body === 'string' ? JSON.parse(body) : body;
                await  securityManager.decryptAndVerifySignPayload(responseData.data, process.env.SUBSCRIPTION_B_APPLICATION, clientPrivateKey, process.env.JWE_SERVER_PUBLICKEY)
               .then((decryptedPayload) => {
