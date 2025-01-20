@@ -76,8 +76,8 @@ const JWE_ALGORITHM = 'RSA-OAEP-256'
 
         const jwkPrivateRSA = rsaPemToJwk(clientPrivateKey, { kid: bApplication }, 'private');
         const privateKey = await jose.importJWK(jwkPrivateRSA, JWT_ALGORITHM);
-        
-        const signedPayload = await new jose.SignJWT(JSON.parse(payload))
+
+        const signedPayload = await new jose.CompactSign(Buffer.from(payload))
             .setProtectedHeader({ alg: JWT_ALGORITHM, kid: bApplication })
             .sign(privateKey);
 
