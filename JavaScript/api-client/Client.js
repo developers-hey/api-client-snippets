@@ -98,7 +98,16 @@ class Client {
               const responseData = typeof body === 'string' ? JSON.parse(body) : body;
                await  securityManager.decryptAndVerifySignPayload(responseData.data, process.env.SUBSCRIPTION_B_APPLICATION, clientPrivateKey, process.env.JWE_SERVER_PUBLICKEY)
               .then((decryptedPayload) => {
-                  responsePayload = { code: responseData.code, message: responseData.message, data:  decryptedPayload}
+
+                const responsePayload = {
+                  code: responseData.code,
+                  message: responseData.message,
+                  data: decryptedPayload
+                };
+                if (responseData.metadata) {
+                  responsePayload.metadata = JSON.stringify(responseData.metadata, null, 2);
+                }
+                  
                   console.log(responsePayload)
                   if(process.env.REQUEST_MFA_ACTIVE === 'true'){
                     resolve(responsePayload);

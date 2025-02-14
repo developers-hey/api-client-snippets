@@ -119,8 +119,19 @@ namespace ApiClient
                 Dictionary<string, object> payload = new Dictionary<string, object>();
                 payload["code"] = responseData["code"];
                 payload["message"] = responseData["message"];
-                var responseDecripted = securityManager.decryptAndVerifySignPayload((string)responseData["data"]); 
-                payload["data"] = responseDecripted;
+                var responseDecripted = "";
+                if (responseData["data"] != null)
+                {
+                    responseDecripted = securityManager.decryptAndVerifySignPayload((string)responseData["data"]);
+                    payload["data"] = responseDecripted;
+                }
+                else
+                {
+                    payload["data"] = null;
+                }
+                if (responseData.ContainsKey("metadata")){
+                    payload["metadata"] = responseData["metadata"];
+                }
                 Console.WriteLine("Response Body: " + JsonConvert.SerializeObject(payload));
                 if (bool.Parse(configuration["REQUEST:MFA_ACTIVE"]))
                   return responseDecripted;

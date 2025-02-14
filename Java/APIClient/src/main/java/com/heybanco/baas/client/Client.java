@@ -1,8 +1,11 @@
 package com.heybanco.baas.client;
 
 import com.heybanco.baas.client.util.SecurityManager;
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
+
 import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,6 +14,7 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.*;
 
@@ -115,9 +119,24 @@ public class Client {
                                 Map<String, String> payload = new HashMap<>();
                                 payload.put("code", jsonResponse.get("code").getAsString());
                                 payload.put("message", jsonResponse.get("message").getAsString());
-                                payload.put("data", securityManager
-                                        .decryptAndVerifySignPayload(jsonResponse.get("data").getAsString()));
-                                logger.log(Level.INFO, payload::toString);
+                                payload.put("data", jsonResponse.has("data") && !jsonResponse.get("data").isJsonNull() ?
+                                        securityManager.decryptAndVerifySignPayload(jsonResponse.get("data").getAsString()) : null);
+                                if(Objects.nonNull(jsonResponse.get("metadata"))) {
+                                        payload.put("metadata", jsonResponse.get("metadata").toString());
+                                }
+
+                                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                                String metadataJson = gson.toJson(jsonResponse.get("metadata"));
+
+                                String logMessage = String.format(
+                                        "code: %s%nmessage: %s%ndata: %s%n%s",
+                                        payload.get("code"),
+                                        payload.get("message"),
+                                        payload.get("data"),
+                                        payload.get("metadata") != null ? "metadata: " + metadataJson + "\n" : ""
+                                );
+                                logger.log(Level.INFO, () -> logMessage);
+
                                 if (Boolean.parseBoolean(properties.getProperty(REQUEST_MFA_ACTIVE)) )
                                     return   JsonParser.parseString(payload.get("data")).getAsJsonObject();
                         } else {

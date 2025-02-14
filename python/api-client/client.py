@@ -27,7 +27,7 @@ def do_request(http_verb: str, endpoint: str, request_payload: str, headers: dic
                                                                     config['SUBSCRIPTION']['B_APPLICATION'],
                                                                     client_private_key.name,
                                                                     config['JWE']['SERVER_PUBLICKEY'])
-
+        
     try:
         response = requests.request(
             http_verb,
@@ -37,15 +37,21 @@ def do_request(http_verb: str, endpoint: str, request_payload: str, headers: dic
             cert=(client_public_key.name, client_private_key.name))
 
         log.info("Response: {} {}".format(response.status_code, response.reason))
-        if payload_encryption and response.status_code == success_response_200:
-            response_payload = {"code": response.json()["code"], "message": response.json()["message"],
-                                "data": security_manager.decrypt_and_verify_sign_payload(response.json()["data"],
-                                                                                         client_private_key.name,
-                                                                                         config['JWE'][
-                                                                                             'SERVER_PUBLICKEY'])}
 
-            log.info(response_payload)
-            result=response_payload
+        if payload_encryption and response.status_code == success_response_200:
+            response_payload = {"code": response.json()["code"],
+                                "message": response.json()["message"]}
+            if response.json()["data"] != None:
+                data = security_manager.decrypt_and_verify_sign_payload(response.json()["data"], client_private_key.name, config['JWE']['SERVER_PUBLICKEY'])
+                response_payload.update({"data": data})
+            else:
+                response_payload.update({"data": None})
+            data = response.json()
+            if "metadata" in data:
+                metadata = data.get("metadata")
+                response_payload.update({"metadata": metadata})
+            result = response_payload
+            log.info(result)
         else:
             log.info(response.json())
             result = response.json()
