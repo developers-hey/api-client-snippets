@@ -5,7 +5,7 @@
 > 2. JavaScript(NodeJs)
 > 3. Python
 > 4. .NET
-> 
+> 5. PHP
 ---
 
 
@@ -19,6 +19,7 @@
 | [JavaScript](/JavaScript/api-client)  | NodeJS 18 or +, NPM          | /JavaScript/api-client      |
 | [Python](/Python/api-client)          | Python 3 or +, pip           | /Python/api-client          |
 | [.NET](Net/APIClient/)                | net7.0 or +                  | /Net/APIClient/             |
+| [PHP](/PHP/APIClient/)                | PHP 8.0 or +, Composer       | /PHP/APIClient/             |
 
 
 
@@ -92,6 +93,13 @@ npm start
 ```bash
 cd Net/APIClient
 dotnet run
+```
+
+* PHP
+```bash
+cd PHP/APIClient
+composer install
+./run.sh
 ```
 
 ---
