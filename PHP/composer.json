@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpseclib/phpseclib": "^3.0",
+        "web-token/jwt-framework": "^4.0"
+    }
+}
