@@ -322,6 +322,31 @@ dist
 
 
 
+# =========== .NET ===========
+bin/
+obj/
+*.sln
+*.csproj.user
+.vs/
+
+
+
+# =========== PHP ===========
+# Composer vendor directory
+vendor/
+/vendor/
+
+# Composer lock files
+composer.lock
+
+# Composer cache
+.composer/
+
+# Composer phar
+composer.phar
+
+
+
 # =========== OTHER ===========
 .idea/
 # Stores VSCode versions used for testing VSCode extensions
